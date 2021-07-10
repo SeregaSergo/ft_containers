@@ -25,13 +25,12 @@ public:
     
 private:
     pointer  _ptr;
-
-    _RAIterator(pointer ptr): _p(ptr) {}
+    _RAIterator(void): _ptr(NULL) {}
 
 public:
-    _RAIterator(): _p(NULL) {}
+    _RAIterator(pointer ptr): _ptr(ptr) {}
 	_RAIterator(_RAIterator const &src): _ptr(src._ptr) {}
-	virtual ~_RAIterator() {}
+	virtual ~_RAIterator(void) {}
 
     _RAIterator & operator=(const _RAIterator & src)
     {
@@ -64,15 +63,28 @@ public:
         return (_ptr >= right._ptr);
     }
 
+    pointer base(void) const {
+        return (_ptr);
+    }
+
     _RAIterator & operator++(void) {
         ++_ptr;
         return (*this);
     }
 
     _RAIterator operator++(int) {
-        _RAIterator(*this) tmp;
+        _RAIterator tmp(*this);
         ++_ptr;
         return (tmp);
+    }
+
+    _RAIterator & operator+=(difference_type pos) {
+        _ptr += pos;
+        return (*this);
+    }
+
+    _RAIterator operator+(difference_type pos) const {
+        return (_ptr + pos);
     }
 
     _RAIterator & operator--(void) {
@@ -84,15 +96,6 @@ public:
         _RAIterator tmp(*this);
         +--_ptr;
         return (tmp);
-    }
-
-    _RAIterator & operator+=(difference_type pos) {
-        _ptr += pos;
-        return (*this);
-    }
-
-    _RAIterator operator+(difference_type pos) const {
-        return (_ptr + n);
     }
 
     _RAIterator & operator-=(difference_type pos) {
@@ -202,28 +205,55 @@ public:
         ++_size;
     };
 
-    size_type   size(void) const
-    {
+    size_type   size(void) const {
         return (_size);
     }
 
-    size_type capacity(void) const
-    {
+    size_type capacity(void) const {
         return (_capacity);
     };
 
-    reference operator[] (size_type n)
-    {
+    reference operator[] (size_type n) {
         return _arr[n];
     };
 
-    const_reference operator[] (size_type n) const
-    {
+    const_reference operator[] (size_type n) const {
         return _arr[n];
     };
 
+    iterator begin(void) {
+        return (_arr);
+    }
+
+    const_iterator begin(void) const {
+        return (_arr);
+    }
+
+    iterator end(void) {
+        return (_arr + _size);
+    }
+
+    const_iterator end(void) const {
+        return (_arr + _size);
+    }
+    
+    reverse_iterator rbegin(void) {
+        return (this->end());
+    }
+
+	const_reverse_iterator rbegin(void) const {
+         return (this->end());
+    }
+
+	reverse_iterator rend(void) {
+        return (this->begin());
+    }
+
+	const_reverse_iterator rend(void) const {
+        return (this->begin());
+    }
 };
 
-};
+}
 
 #endif
