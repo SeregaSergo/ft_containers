@@ -10,9 +10,9 @@ CC =		clang++
 CFLAGS =	-Wall -Wextra -Werror
 OUTF =		$(PATH)/output_my.txt \
 			$(PATH)/output_std.txt
-DEPS =		$(PATH)/utils.hpp \
+DEPS =		$(PATH)/test.hpp \
 			vector.hpp \
-			traits.hpp \
+			utils.hpp \
 			reverse_iterator.hpp
 
 .PHONY: all clean fclean re

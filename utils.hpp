@@ -2,6 +2,7 @@
 #define TRAITS_HPP
 
 #include <type_traits>
+#include <sstream>
 
 namespace ft {
 
@@ -88,6 +89,23 @@ struct enable_if<true, _Tp> {
     typedef _Tp type;
 };
 
+template<class InputIterator>
+typename ft::iterator_traits<InputIterator>::difference_type distance (InputIterator first, InputIterator last)
+{
+    typename ft::iterator_traits<InputIterator>::difference_type dist = 0;
+    for (; first != last; ++first)
+        dist++;
+    return (dist);
 };
+
+template <typename T>
+std::string to_string(T smth)
+{
+    std::ostringstream ss;
+    ss << smth;
+    return (ss.str());
+};
+
+}
 
 #endif
