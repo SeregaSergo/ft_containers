@@ -7,7 +7,7 @@ OBJ_CLS =	$(PATH)/Logger.o
 OBJ_MY =	$(PATH)/main_my.o
 OBJ_STD =	$(PATH)/main_std.o
 CC =		clang++
-CFLAGS =	-Wall -Wextra -Werror
+CFLAGS =	-fsanitize=address -Wall -Wextra -Werror
 OUTF =		$(PATH)/output_my.txt \
 			$(PATH)/output_std.txt
 DEPS =		$(PATH)/test.hpp \

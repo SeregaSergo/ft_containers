@@ -27,7 +27,7 @@ public:
 private:
     pointer  _ptr;
     _RAIterator(void): _ptr(NULL) {}
-
+    
 public:
     _RAIterator(pointer ptr): _ptr(ptr) {}
 	_RAIterator(_RAIterator const &src): _ptr(src._ptr) {}
@@ -149,6 +149,16 @@ private:
     size_type       _size;
     A               _alloc;
 
+    void    _moveForward(pointer pos, size_type n) {
+
+        pointer ptr = _arr + _size - 1;
+        while (ptr != pos - 1) {
+            _alloc.construct(ptr + n, *ptr);
+            _alloc.destroy(ptr);
+            --ptr;
+        }
+    }
+
 public:
 
     // empty container constructor (default constructor)
@@ -169,22 +179,52 @@ public:
             _arr = NULL;
     }
 
-    // // range constructor
-    // template <class InputIterator>
-    //      vector (InputIterator first, InputIterator last,
-    //              const allocator_type& alloc = allocator_type())
-    // {
+    // range constructor
+    template <class InputIterator>
+    vector (InputIterator first, typename ft::enable_if<!ft::is_integral<InputIterator>::value, 
+            InputIterator>::type last, const allocator_type& alloc = allocator_type())
+            : _arr(NULL), _capacity(0), _size(0), _alloc(alloc)
+    {
+        size_type dist = ft::distance<InputIterator>(first, last);
+        size_type i = 0;
+
+        if (dist > 0) {
+            _arr = _alloc.allocate(dist);
+            _capacity = dist;
+        }
+        for (; first != last; ++first) {
+            _alloc.construct(_arr + i, *first);
+            ++i;
+        }
+        _size = dist;
+    }
         
     // copy constructor
-    vector (const vector& x) : _capacity(0), _size(x._size) 
+    vector (const vector& x) : _capacity(0), _size(0)
     {
         reserve(x._capacity);
 		std::memcpy(this->_arr, x._arr, x._size * sizeof(value_type));
+        _size = x._size;
     }
 
-    // vector& operator=(const vector& x) {
+    virtual ~vector(void)
+    {
+        clear();
+        if (_capacity)
+            _alloc.deallocate(_arr, _capacity);
+    }
 
-    // }
+    vector& operator=(const vector& x)
+    {
+        if (x == *this)
+			return (*this);
+		clear();
+        if (_capacity < x._capacity)
+			this->reserve(x._capacity);
+        std::memcpy(_arr, x._arr, x._size * sizeof(value_type));
+        _size = x._size;
+        return (*this);
+    }
 
     //
     // Capacity and size member-functions
@@ -228,7 +268,7 @@ public:
         if (n > max_size())
 			throw (std::length_error("ft::vector::reserve: Can not allocate memory more then " \
             + ft::to_string(max_size())));
-        else if (n > capacity())
+        else if (n > _capacity)
 		{
             pointer newBlock = _alloc.allocate(n * sizeof(T));
             for (size_type i = 0; i < _size; ++i)
@@ -236,7 +276,8 @@ public:
                 _alloc.construct(newBlock + i, _arr[i]);
                 _alloc.destroy(_arr + i);
             }
-            _alloc.deallocate(_arr, _capacity);
+            if (_capacity)
+                _alloc.deallocate(_arr, _capacity);
             _capacity = n;
             _arr = newBlock;
         }
@@ -299,18 +340,43 @@ public:
         }
     }
 
-    // iterator insert(iterator position, const value_type& val) {
-
-    // }
+    iterator insert(iterator position, const value_type& val)
+    {
+        difference_type dist = position.base() - _arr;
+        insert(position, 1, val);
+        return (_arr + dist + 1);
+    }
 	
-    // void insert(iterator position, size_type n, const value_type& val) {
-
-    // }
+    void insert(iterator position, size_type n, const value_type& val)
+    {
+        if (n == 0)
+			return;
+        difference_type dist = position.base() - _arr;
+        if (_capacity - _size >= n)
+            reserve(_size + n);
+        _moveForward(_arr + dist, n);
+        for (size_type i = n; i != 0; --i)
+            _alloc.construct(_arr + dist + (i - 1), val);
+        _size += n;
+    }
 	
-    // template <class InputIterator>
-    // void insert(iterator position, InputIterator first, InputIterator last) {
+    template <class InputIterator>
+    void insert(iterator position, InputIterator first, InputIterator last)
+    {
+        size_type n = last - first;
+        difference_type dist = position.base() - _arr;
 
-    // }
+        if (n == 0)
+			return;
+        if (_capacity - _size >= n)
+            reserve(_size + n);
+        _moveForward(_arr + dist, n);
+        for (size_type i = n; i != 0; --i) {
+            _alloc.construct(_arr + dist + (i - 1), *first);
+            ++first;
+        }
+        _size += n;
+    }
 
     iterator erase(iterator position)
     {
@@ -366,7 +432,7 @@ public:
 
     void clear(void) {
         for (size_type i = 0; i != _size; ++i)
-            _alloc.destroy(_arr[i]);
+            _alloc.destroy(_arr + i);
         _size = 0;
     }
 
@@ -448,6 +514,21 @@ public:
 template <class T, class Alloc>
 void swap (vector<T,Alloc>& x, vector<T,Alloc>&y) {
     x.swap(y);
+}
+
+template <class T, class Alloc>
+bool operator==(const vector<T, Alloc> & left, const vector<T, Alloc> & right)
+{
+    if (left.size() != right.size())
+        return (false);
+    typename vector<T, Alloc>::const_iterator rit = right.begin();
+    for(typename vector<T, Alloc>::const_iterator lit = left.begin(); lit != left.end(); ++lit)
+    {
+        if (*lit != *rit)
+            return (false);
+        ++rit;
+    }
+    return (true);
 }
 
 }

@@ -90,11 +90,11 @@ struct enable_if<true, _Tp> {
 };
 
 template<class InputIterator>
-typename ft::iterator_traits<InputIterator>::difference_type distance (InputIterator first, InputIterator last)
+typename ft::iterator_traits<InputIterator>::difference_type distance(InputIterator first, InputIterator last)
 {
     typename ft::iterator_traits<InputIterator>::difference_type dist = 0;
     for (; first != last; ++first)
-        dist++;
+        ++dist;
     return (dist);
 };
 
