@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <fstream>
-#include "Logger.hpp"
 
 #ifdef STD_TEST_MY
 
@@ -17,13 +16,30 @@ using namespace ft;
 
 #endif
 
+#define BUFFER_SIZE 4096
+
+struct Buffer
+{
+	int idx;
+	char buff[BUFFER_SIZE];
+
+    Buffer(void);
+    Buffer(const char * str);
+    Buffer(Buffer const & src);
+    Buffer & operator=(Buffer const & src);
+};
+
+std::ostream & operator<<(std::ostream & o, Buffer const & src);
+
+void    test_vector(std::ostream & out);
+
 template < class V, class S>
 void  printVector(V const & vec, S & out)
 {
     typename V::size_type i = 0;
 
     out << "Size: " << vec.size() << '\n';
-    out << "Max size: " << vec.max_size() << '\n';
+    // out << "Max size: " << vec.max_size() << '\n';
     out << "Capacity: " << vec.capacity() << "\n[";
     if (vec.size() != 0)
     {
@@ -41,7 +57,7 @@ void  printVectorSTD(V const & vec, S & out)
 
     out << "Size: " << vec.size() << std::endl;
     out << "Max size: " << vec.max_size() << std::endl;
-    out << "Capacity: " << vec.capacity() << std::endl;
+    // out << "Capacity: " << vec.capacity() << std::endl;
     out << '[';
     if (vec.size() != 0)
     {
