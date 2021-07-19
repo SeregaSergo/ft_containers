@@ -152,13 +152,26 @@ private:
     size_type       _size;
     A               _alloc;
 
-    void    _moveForward(pointer pos, size_type n) {
+    void    _moveForward(pointer _a, pointer pos, size_type n) {
 
-        pointer ptr = _arr + _size - 1;
+        pointer ptr = _a + _size - 1;
         while (ptr != pos - 1) {
             _alloc.construct(ptr + n, *ptr);
             _alloc.destroy(ptr);
             --ptr;
+        }
+    }
+
+    pointer _reserve(size_type n)
+    {
+        if (n > max_size())
+			throw (std::length_error("ft::vector::reserve"));
+        else
+		{
+            pointer newBlock = _alloc.allocate(n);
+            for (size_type i = 0; i < _size; ++i)
+                _alloc.construct(newBlock + i, _arr[i]);
+            return newBlock;
         }
     }
 
@@ -272,7 +285,7 @@ public:
 			throw (std::length_error("ft::vector::reserve"));
         else if (n > _capacity)
 		{
-            pointer newBlock = _alloc.allocate(n * sizeof(T));
+            pointer newBlock = _alloc.allocate(n);
             for (size_type i = 0; i < _size; ++i)
             {
                 _alloc.construct(newBlock + i, _arr[i]);
@@ -361,7 +374,7 @@ public:
             else
                 reserve(_capacity * CAPACITY_FACTOR);
         }
-        _moveForward(_arr + dist, n);
+        _moveForward(_arr, _arr + dist, n);
         for (size_type i = n; i != 0; --i)
             _alloc.construct(_arr + dist + (i - 1), val);
         _size += n;
@@ -377,18 +390,36 @@ public:
 
         if (n == 0)
 			return;
-        if (_capacity - _size < n) {
-            if (_size + n > _capacity * CAPACITY_FACTOR)
-                reserve(_size + n);
+        if (_capacity - _size < n)
+        {
+            size_type newSize = _size + n;
+            size_type newCapacity;
+            if (newSize > _capacity * CAPACITY_FACTOR)
+                newCapacity = newSize;
             else
-                reserve(_capacity * CAPACITY_FACTOR);
+                newCapacity = _capacity * CAPACITY_FACTOR;
+            pointer newBlock = _reserve(newCapacity);
+            _moveForward(newBlock, newBlock + dist, n);
+            for (size_type i = 0; i != n; ++i) {
+                _alloc.construct(newBlock + dist + i, *first);
+                ++first;
+            }
+            clear();
+            if (_capacity)
+                _alloc.deallocate(_arr, _capacity);
+            _capacity = newCapacity;
+            _size = newSize;
+            _arr = newBlock;
         }
-        _moveForward(_arr + dist, n);
-        for (size_type i = 0; i != n; ++i) {
-            _alloc.construct(_arr + dist + i, *first);
-            ++first;
+        else
+        {
+            _moveForward(_arr, _arr + dist, n);
+            for (size_type i = 0; i != n; ++i) {
+                _alloc.construct(_arr + dist + i, *first);
+                ++first;
+            }
+            _size += n;
         }
-        _size += n;
     }
 
     iterator erase(iterator position)

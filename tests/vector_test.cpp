@@ -273,6 +273,9 @@ void    test_vector(std::ostream & out)
         int arr[] = {1, 4, 6, -1, 10, 666, 111, 51};
         vec1.insert(vec1.begin() + 2, arr, arr + 4);
         printVector(vec1, out);
+        out << "After inserting itself some range of elements:\n";
+        vec1.insert(vec1.end(), vec1.begin(), vec1.end());
+        printVector(vec1, out);
         out << "Total time : " << clock() - start_time << std::endl;
     }
     {

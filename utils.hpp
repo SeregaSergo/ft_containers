@@ -6,16 +6,6 @@
 
 namespace ft {
 
-// template<class Iterator>
-// struct iterator_traits
-// {
-//     typedef typename Iterator::difference_type difference_type;
-//     typedef typename Iterator::value_type value_type;
-//     typedef typename Iterator::pointer pointer;
-//     typedef typename Iterator::reference reference;
-//     typedef typename Iterator::iterator_category iterator_category;
-// };
-
 template <class _Iter, bool> struct __iterator_traits {};
 
 template <class Iterator>
@@ -100,7 +90,8 @@ struct enable_if<true, _Tp> {
 };
 
 template<class InputIterator>
-typename ft::iterator_traits<InputIterator>::difference_type distance(InputIterator first, InputIterator last)
+typename ft::iterator_traits<InputIterator>::difference_type 
+            distance(InputIterator first, InputIterator last)
 {
     typename ft::iterator_traits<InputIterator>::difference_type dist = 0;
     for (; first != last; ++first)
@@ -147,7 +138,7 @@ bool lexicographical_compare (InputIterator1 first1, InputIterator1 last1,
         ++first2;
     }
     return (first2 != last2);
-}
+};
 
 template <class Tp>
 struct less
@@ -159,9 +150,66 @@ struct less
     bool operator()(const Tp & _x, const Tp & _y) const {
         return (_x < _y);
     }
+};
+
+template <class T1, class T2>
+struct pair
+{
+    typedef T1 first_type;
+    typedef T2 second_type;
+
+    T1 first;
+    T2 second;
+
+    pair(void) : first(), second() {}
+    pair(const first_type & a, const second_type & b) : first(a), second(b) {}
+    
+    template<class U, class V>
+    pair (const pair<U, V> & pr) : first(pr.first), second(pr.second) {}
+
+    pair & operator=(const pair & pr) 
+    {
+        first = pr.first;
+        second = pr.second;
+        return (*this);
+    }
+};
+
+template <class T1, class T2>
+bool operator==(const pair<T1,T2>& l, const pair<T1,T2>& r) {
+    return (l.first == r.first && l.second == r.second);
+}
+
+template <class T1, class T2>
+bool operator!=(const pair<T1,T2>& l, const pair<T1,T2>& r) {
+    return (!(l == r));
+}
+
+template <class T1, class T2>
+bool operator<(const pair<T1,T2>& l, const pair<T1,T2>& r) {
+    return (l.first < r.first || (!(r.first < l.first) && l.second < r.second));
+}
+
+template <class T1, class T2>
+bool operator<=(const pair<T1,T2>& l, const pair<T1,T2>& r) {
+    return (!(r < l));
+}
+
+template <class T1, class T2>
+bool operator>(const pair<T1,T2>& l, const pair<T1,T2>& r) {
+    return (r < l);
+}
+
+template <class T1, class T2>
+bool operator>=(const pair<T1,T2>& l, const pair<T1,T2>& r) {
+    return (!(l < r));
 }
 
 
+template <class T1, class T2>
+pair<T1,T2> make_pair (T1 x, T2 y) {
+    return (pair<T1, T2>(x, y));
+}
 
 }
 

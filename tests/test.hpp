@@ -58,12 +58,12 @@ void  printVector(V const & vec, S & out)
     out << "]\n--------------------------\n";
 }
 
-template < class V, class S>
-void  printMap(V const & map, S & out)
-{
-    typename V::size_type i = 0;
+// template < class V, class S>
+// void  printMap(V const & map, S & out)
+// {
+//     typename V::size_type i = 0;
 
 
-}
+// }
 
 #endif
