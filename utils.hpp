@@ -122,7 +122,7 @@ bool lexicographical_compare (InputIterator1 first1, InputIterator1 last1,
 {
     while (first1 != last1)
     {
-        if (*first2 < *first1 || first2 == last2)
+        if (first2 == last2 || *first2 < *first1)
             return false;
         else if (*first1 < *first2)
             return true;
@@ -148,6 +148,20 @@ bool lexicographical_compare (InputIterator1 first1, InputIterator1 last1,
     }
     return (first2 != last2);
 }
+
+template <class Tp>
+struct less
+{
+    typedef Tp      first_argument_type;
+    typedef Tp      second_argument_type;
+    typedef bool    result_type;
+
+    bool operator()(const Tp & _x, const Tp & _y) const {
+        return (_x < _y);
+    }
+}
+
+
 
 }
 

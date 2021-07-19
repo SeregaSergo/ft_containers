@@ -3,25 +3,32 @@
 
 #include <iostream>
 #include <fstream>
+#include <algorithm>
+#include <ctime>
+#include <memory>
 
 #ifdef STD_TEST_MY
 
 #include <vector>
+#include <map>
+#include <stack>
 using namespace std;
 
 #else
 
 #include "../vector.hpp"
+// #include "../map.hpp"
+// #include "../stack.hpp"
 using namespace ft;
 
 #endif
 
-#define BUFFER_SIZE 4096
+#define BUF_SIZE_CONST 4096
 
 struct Buffer
 {
 	int idx;
-	char buff[BUFFER_SIZE];
+	char buff[BUF_SIZE_CONST];
 
     Buffer(void);
     Buffer(const char * str);
@@ -32,6 +39,8 @@ struct Buffer
 std::ostream & operator<<(std::ostream & o, Buffer const & src);
 
 void    test_vector(std::ostream & out);
+void    test_map(std::ostream & out);
+void    test_stack(std::ostream & out);
 
 template < class V, class S>
 void  printVector(V const & vec, S & out)
@@ -39,7 +48,6 @@ void  printVector(V const & vec, S & out)
     typename V::size_type i = 0;
 
     out << "Size: " << vec.size() << '\n';
-    // out << "Max size: " << vec.max_size() << '\n';
     out << "Capacity: " << vec.capacity() << "\n[";
     if (vec.size() != 0)
     {
@@ -51,21 +59,11 @@ void  printVector(V const & vec, S & out)
 }
 
 template < class V, class S>
-void  printVectorSTD(V const & vec, S & out)
+void  printMap(V const & map, S & out)
 {
     typename V::size_type i = 0;
 
-    out << "Size: " << vec.size() << std::endl;
-    out << "Max size: " << vec.max_size() << std::endl;
-    // out << "Capacity: " << vec.capacity() << std::endl;
-    out << '[';
-    if (vec.size() != 0)
-    {
-        for (; i != vec.size() - 1; ++i)
-            out << vec[i] << ", ";
-        out << vec[i];
-    }
-    out << "]\n--------------------------" << std::endl;
+
 }
 
 #endif

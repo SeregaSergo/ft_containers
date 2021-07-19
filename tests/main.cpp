@@ -3,6 +3,7 @@
 #include "test.hpp"
 #include <fstream>
 
+
 Buffer::Buffer(void) : idx(0) {}
 
 Buffer::Buffer(const char * str) {
@@ -51,15 +52,37 @@ void    printWelcome(std::ofstream & outf)
 
 int main()
 {
+    unsigned int start_time;
     #ifndef DEBUG_TERM
         std::ofstream out;
         printWelcome(out);
     #else
         std::ostream & out = std::cout;
     #endif
+
     out << " *******        *******\n";
     out << " ******* VECTOR *******\n";
     out << " *******        *******\n";
+
+    start_time =  clock();
     test_vector(out);
+    out << "Total time : " << clock() - start_time << std::endl;
+
+    // out << " *******         *******\n";
+    // out << " *******   MAP   *******\n";
+    // out << " *******         *******\n";
+
+    // start_time =  clock();
+    // test_map(out);
+    // out << "Total time : " << clock() - start_time << std::endl;
+
+    // out << " *******         *******\n";
+    // out << " *******  STACK  *******\n";
+    // out << " *******         *******\n";
+
+    // start_time =  clock();
+    // test_stack(out);
+    // out << "Total time : " << clock() - start_time << std::endl;
+
 	return 0;
 }

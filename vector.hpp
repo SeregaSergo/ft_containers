@@ -11,7 +11,6 @@ namespace ft
 
 #define CAPACITY_FACTOR 2
 
-
 template < class T >
 class _RAIterator
 {
@@ -35,7 +34,7 @@ public:
 
     _RAIterator & operator=(const _RAIterator & src)
     {
-        if (*src != this)
+        if (&src != this)
             _ptr = src._ptr;
         return (*this);
     }
@@ -175,9 +174,10 @@ public:
     {
         if (n > 0)
         {
-            _arr = _alloc.allocate(n * sizeof(value_type));
-            for (size_type i = 0; i < _size; ++i)
+            _arr = _alloc.allocate(n);
+            for (size_type i = 0; i < n; ++i)
                 _alloc.construct(_arr + i, val);
+                // std::memcpy(_arr + i, &val, sizeof(value_type));
         }
         else
             _arr = NULL;
@@ -451,21 +451,21 @@ public:
     //
     // Element access member-functions:
     //
-    reference operator[] (size_type n) {
+    reference operator[](size_type n) {
         return _arr[n];
     };
 
-    const_reference operator[] (size_type n) const {
+    const_reference operator[](size_type n) const {
         return _arr[n];
     };
 
-    reference at (size_type n) {
+    reference at(size_type n) {
         if (n >= _size)
 			throw std::out_of_range("ft::vector: index is out of range");
 		return (_arr[n]);
     }
 
-    const_reference at (size_type n) const {
+    const_reference at(size_type n) const {
         if (n >= _size)
 			throw std::out_of_range("ft::vector: index is out of range");
 		return (_arr[n]);
@@ -522,6 +522,14 @@ public:
 	const_reverse_iterator rend(void) const {
         return (this->begin());
     }
+
+    //
+    // Allocator getter:
+    //
+    allocator_type get_allocator() const {
+        return (_alloc);
+    }
+    
 };
 
 template <class T, class Alloc>

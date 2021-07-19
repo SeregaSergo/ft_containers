@@ -1,22 +1,24 @@
-NAME_MY =	test_my
-NAME_DBG =	test_my_dbg
-NAME_STD =	test_std
-PATH =		./tests
-SRC =		main.cpp
-OBJ_MY =	$(PATH)/main_my.o
-OBJ_MY_DBG =$(PATH)/main_my_debug.o
-OBJ_STD =	$(PATH)/main_std.o
-SRCS =		vector_test.cpp
-OBJS =		$(PATH)/vector_test.o
-OBJS_STD =	$(PATH)/vector_test_std.o
-CC =		clang++
-CFLAGS =	-fsanitize=address -Wall -Wextra -Werror
-OUTF =		$(PATH)/output_my.txt \
-			$(PATH)/output_std.txt
-DEPS =		$(PATH)/test.hpp \
-			vector.hpp \
-			utils.hpp \
-			reverse_iterator.hpp
+NAME_MY =		test_my
+NAME_DBG =		test_dbg
+NAME_DBG_MY =	test_dbg_my
+NAME_STD =		test_std
+PATH =			./tests
+SRC =			main.cpp
+OBJ_MY =		$(PATH)/main_my.o
+OBJ_DBG =		$(PATH)/main_dbg.o
+OBJ_DBG_MY =	$(PATH)/main_dbg_my.o
+OBJ_STD =		$(PATH)/main_std.o
+SRCS =			vector_test.cpp
+OBJS =			$(PATH)/vector_test.o
+OBJS_STD =		$(PATH)/vector_test_std.o
+CC =			clang++
+CFLAGS =		-Wall -Wextra -Werror
+OUTF =			$(PATH)/output_my.txt \
+				$(PATH)/output_std.txt
+DEPS =			$(PATH)/test.hpp \
+				vector.hpp \
+				utils.hpp \
+				reverse_iterator.hpp
 
 .PHONY: all clean fclean re
 
@@ -43,18 +45,24 @@ $(OBJS_STD): $(PATH)/$(SRCS)
 # $(OBJ_CLS): $(PATH)/$(CLS) $(PATH)/Logger.hpp
 # 	$(CC) $(CFLAGS) -c -o $@ $<
 
-debug: $(NAME_DBG)
+debug: $(NAME_DBG) $(NAME_DBG_MY)
 
-$(NAME_DBG): $(OBJ_MY_DBG) $(OBJS)
-	$(CC) $(CFLAGS) $(OBJ_MY_DBG) $(OBJS) -o $(NAME_DBG)
+$(NAME_DBG): $(OBJ_DBG) $(OBJS_STD)
+	$(CC) $(CFLAGS) $(OBJ_DBG) $(OBJS_STD) -o $(NAME_DBG)
 
-$(OBJ_MY_DBG): $(PATH)/$(SRC)
+$(OBJ_DBG): $(PATH)/$(SRC)
+	$(CC) $(CFLAGS) -D DEBUG_TERM -D STD_TEST_MY -c -o $@ $<
+
+$(NAME_DBG_MY): $(OBJ_DBG_MY) $(OBJS)
+	$(CC) $(CFLAGS) $(OBJ_DBG_MY) $(OBJS) -o $(NAME_DBG_MY)
+
+$(OBJ_DBG_MY): $(PATH)/$(SRC)
 	$(CC) $(CFLAGS) -D DEBUG_TERM -c -o $@ $<
 
 clean:
-	/bin/rm -f $(OBJ_MY) $(OBJ_STD) $(OUTF) $(OBJ_MY_DBG) $(OBJS_STD) $(OBJS)
+	/bin/rm -f $(OBJ_MY) $(OBJ_STD) $(OUTF) $(OBJ_DBG_MY) $(OBJ_DBG) $(OBJS_STD) $(OBJS)
 
 fclean: clean
-	/bin/rm -f $(NAME_MY) $(NAME_STD) $(NAME_DBG)
+	/bin/rm -f $(NAME_MY) $(NAME_STD) $(NAME_DBG) $(NAME_DBG_MY)
 
 re: fclean all
