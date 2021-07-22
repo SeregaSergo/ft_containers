@@ -19,6 +19,7 @@ public:
     
     class value_compare
     {
+        // friend class map;
         public:
             typedef bool                        result_type;
             typedef value_type                  first_argument_type;
@@ -29,6 +30,7 @@ public:
             value_compare (Compare c) : comp(c) {}
         
         public:
+
             result_type operator()(const first_argument_type & x,
                              const second_argument_type & y) const
             {
@@ -49,7 +51,7 @@ public:
     typedef typename allocator_type::size_type                  size_type;
 
 private:
-    Red_black_tree<value_type, Compare>         _bst;
+    Red_black_tree<value_type, _vc>             _bst;
     Compare                                     _cmp;
     allocator_type                              _alloc;
 
