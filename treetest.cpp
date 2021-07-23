@@ -29,7 +29,9 @@ int main()
     tree.insert(220);
     tree.insert(230);
     tree.print(std::cout);
-    
+    std::cout << "Erase 70:" << std::endl;
+    tree.erase(70);
+    tree.print(std::cout);
     ft::Red_black_tree<int>::node_pointer ptr;
     ptr = tree.find(-110);
     if (ptr)

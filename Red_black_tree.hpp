@@ -70,6 +70,25 @@ private:
     Compare         _comp;
     allocator_type  _alloc;
 
+    bool    isLeaf(node_pointer n) {
+        return (n->left == NULL && n->right == NULL);
+    }
+
+    void replace_node_with_child(node_pointer n, node_pointer child)
+    {
+        if (child != NULL)
+            child->parent = n->parent;
+        if (n != _root)
+        {
+            if (n == n->parent->left)
+                n->parent->left = child;
+            else
+                n->parent->right = child;
+        }
+        else
+            _root = child;
+    }
+
     node_pointer grandparent(node_pointer n)
     {
         if ((n != NULL) && (n->parent != NULL))
@@ -87,6 +106,14 @@ private:
             return g->right;
         else
             return g->left;
+    }
+
+    node_pointer sibling(node_pointer n)
+    {
+        if (n == n->parent->left)
+            return n->parent->right;
+        else
+            return n->parent->left;
     }
 
     /*       |                  |
@@ -189,6 +216,96 @@ private:
         }
     }
     
+    void    fixTreeDelete(node_pointer n)
+    {
+        if (n->parent == NULL)              // case 1
+            return;
+
+        node_pointer s = sibling(n);
+        if (s->red)                         // case 2
+        {
+            n->parent->red = true;
+            s->red = false;
+            if (n == n->parent->left)
+                rotate_left(n->parent);
+            else
+                rotate_right(n->parent);
+            s = sibling(n);
+        }
+        if ((!n->parent->red) && (!s->red) && 
+            (!s->left || !s->left->red) &&
+            (!s->right || !s->right->red))          // case 3
+        {
+            s->red = true;
+            fixTreeDelete(n->parent);
+        }
+        else
+            fixTreeDelete2(n);
+        
+    }
+
+    void    fixTreeDelete2(node_pointer n)
+    {
+        node_pointer s = sibling(n);
+        if ((n->parent->red) && (!s->red) &&
+            (!s->left || !s->left->red) &&
+            (!s->right || !s->right->red))          // case 4
+        {
+            s->red = true;
+            n->parent->red = false;
+        }
+        else if (!s->red)
+        {
+            if ((n == n->parent->left) &&
+                (!s->right || !s->right->red) &&
+                (s->left && s->left->red))
+            {
+                s->red = true;
+                s->left->red = false;
+                rotate_right(s);
+            }
+            else if ((n == n->parent->right) &&
+                    (!s->left || !s->left->red) &&
+                    (s->right && s->right->red))
+            {
+                s->red = true;
+                s->right->red = false;
+                rotate_left(s);
+            }
+        }
+        
+        s = sibling(n);
+        s->red = n->parent->red;
+        n->parent->red = false;
+
+        if (n == n->parent->left)
+        {
+            if (s->right)
+                s->right->red = false;
+            rotate_left(n->parent);
+        }
+        else
+        {
+            if (s->left)
+                s->left->red = false;
+            rotate_right(n->parent);
+        }
+    }
+
+    node_pointer minimum(node_pointer n)
+    {
+        while (n->left)
+            n = n->left;
+        return (n);
+    }
+
+    node_pointer maximum(node_pointer n)
+    {
+        while (n->right)
+            n = n->right;
+        return (n);
+    }
+
     int depth(void)
     {
         node_pointer ptr = _root;
@@ -217,7 +334,8 @@ private:
     }
 
     template <class S>
-    void printHelper(node_pointer root, std::string indent, bool last, S & out) {
+    void printHelper(node_pointer root, std::string indent, bool last, S & out)
+    {
 	   	if (root != NULL) {
 		   out << indent;
 		   if (last) {
@@ -234,6 +352,7 @@ private:
 		   printHelper<S>(root->right, indent, true, out);
 		}
 	}
+
 
 public:
     Red_black_tree(void) : _root(NULL) {}
@@ -278,8 +397,78 @@ public:
         fixTreeInsert(node);
     }
 
+    void erase(const_reference value)
+    {
+        node_pointer to_del = find(value);
+        if (to_del == NULL)
+            return;
+
+        else if (to_del->left != NULL && to_del->right != NULL)
+        {
+            node_pointer tmp = maximum(to_del->left);
+            to_del->val = tmp->val;
+            to_del = tmp;
+        }
+
+        // In all cases node to delete has at maximum one child. 
+        
+        node_pointer child = to_del->right ? to_del->right : to_del->left;
+    
+        if (!to_del->red)
+        {
+            if (child && child->red)
+                child->red = false;
+            else
+                fixTreeDelete(to_del);   // yes, we can do this
+        }
+        replace_node_with_child(to_del, child);
+        _alloc.destroy(to_del);
+        _alloc.deallocate(to_del, 1);
+    }
+
+
     node_pointer find(const_reference value) {
         return(findNode(value, _root));
+    }
+
+    node_pointer successor(node_pointer n)
+    {
+		if (n->right != NULL)
+			return minimum(n->right);
+
+		node_pointer p = n->parent;
+		while (p != NULL && n != p->left)
+        {
+			n = p;
+			p = p->parent;
+		}
+		return (p);
+	}
+
+    node_pointer predecessor(node_pointer n)
+    {
+		if (n->left != NULL)
+			return maximum(n->left);
+
+		node_pointer p = n->parent;
+		while (p != NULL && n != p->right)
+        {
+			n = p;
+			p = p->parent;
+		}
+		return (p);
+	}
+
+    node_pointer min(void) {
+        if (_root == NULL)
+            return (NULL);
+        return (minimum(_root));
+    }
+
+    node_pointer max(void) {
+        if (_root == NULL)
+            return (NULL);
+        return (maximum(_root));
     }
 
     template <class S>
