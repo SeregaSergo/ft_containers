@@ -1,13 +1,13 @@
-#ifndef UTILS_HPP
-#define UTILS_HPP
+#ifndef TEST_HPP
+#define TEST_HPP
 
 #include <iostream>
-#include <fstream>
+#include <sstream>
 #include <algorithm>
 #include <ctime>
 #include <memory>
 
-#ifdef STD_TEST_MY
+#ifdef STD_TEST
 
 #include <vector>
 #include <map>
@@ -16,9 +16,9 @@ using namespace std;
 
 #else
 
-#include "../vector.hpp"
-// #include "../map.hpp"
-// #include "../stack.hpp"
+#include "../containers/vector.hpp"
+#include "../containers/map.hpp"
+// #include "../containers/stack.hpp"
 using namespace ft;
 
 #endif
@@ -58,12 +58,21 @@ void  printVector(V const & vec, S & out)
     out << "]\n--------------------------\n";
 }
 
-// template < class V, class S>
-// void  printMap(V const & map, S & out)
-// {
-//     typename V::size_type i = 0;
-
-
-// }
+template < class V, class S>
+void  printMap(V const & map, S & out)
+{
+    out << "Size: " << map.size() << '\n';
+	
+	typename V::const_iterator it;
+	for (it = map.begin(); it != map.end(); ++it)
+	{
+		out << "[";
+		out << (*it).first;
+		out << ", ";
+		out << (*it).second;
+		out << "] ";
+	}
+	out << "\n----------------------------------\n";
+}
 
 #endif

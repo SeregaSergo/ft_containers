@@ -37,18 +37,20 @@ std::ostream & operator<<(std::ostream & o, Buffer const & src) {
 
 void    printWelcome(std::ofstream & outf)
 {
-    #ifdef STD_TEST_MY
+    #ifdef STD_TEST
 
-        outf.open("./tests/output_std.txt");
+        outf.open("./output_std.txt");
         outf << "\n ***** STD Library *****\n" << std::endl;
 
     #else
 
-        outf.open("./tests/output_my.txt");
+        outf.open("./output_my.txt");
         outf << "\n ***** My own library *****\n" << std::endl;
 
     #endif
 }
+
+void    test_vector(std::ostream & out);
 
 int main()
 {
@@ -68,14 +70,16 @@ int main()
     test_vector(out);
     out << "Total time : " << clock() - start_time << std::endl;
 
-    // out << " *******         *******\n";
-    // out << " *******   MAP   *******\n";
-    // out << " *******         *******\n";
+    out << "\n\n";
+    out << " *******         *******\n";
+    out << " *******   MAP   *******\n";
+    out << " *******         *******\n";
 
-    // start_time =  clock();
-    // test_map(out);
-    // out << "Total time : " << clock() - start_time << std::endl;
+    start_time =  clock();
+    test_map(out);
+    out << "Total time : " << clock() - start_time << std::endl;
 
+    // out << "\n\n";
     // out << " *******         *******\n";
     // out << " *******  STACK  *******\n";
     // out << " *******         *******\n";
