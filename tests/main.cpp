@@ -39,12 +39,12 @@ void    printWelcome(std::ofstream & outf)
 {
     #ifdef STD_TEST
 
-        outf.open("./output_std.txt");
+        outf.open("./results/output_std.txt");
         outf << "\n ***** STD Library *****\n" << std::endl;
 
     #else
 
-        outf.open("./output_my.txt");
+        outf.open("./results/output_my.txt");
         outf << "\n ***** My own library *****\n" << std::endl;
 
     #endif

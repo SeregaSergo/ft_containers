@@ -1,28 +1,32 @@
-NAME_MY =		test_my
-NAME_STD =		test_std
-NAME_MY_DBG =	test_my_dbg
-NAME_STD_DBG =	test_std_dbg
+NAME =			test
 
 PATH_T =		./tests
+PATH_P =		./tests/program
 PATH_C =		./containers
 PATH_O =		./tests/object_files
 PATH_U =		./containers/utils
+PATH_R =		./results
+
+NAME_MY =		$(addprefix $(PATH_P)/,$(NAME:%=%_my))
+NAME_STD =		$(addprefix $(PATH_P)/,$(NAME:%=%_std))
+NAME_MY_DBG =	$(addprefix $(PATH_P)/,$(NAME:%=%_my_dbg))
+NAME_STD_DBG =	$(addprefix $(PATH_P)/,$(NAME:%=%_std_dbg))
 
 SRC =			main.cpp
-OBJ_MY =		$(addprefix $(PATH_T)/,$(SRC:%.cpp=%_my.o))
-OBJ_STD =		$(addprefix $(PATH_T)/,$(SRC:%.cpp=%_std.o))
-OBJ_MY_DBG =	$(addprefix $(PATH_T)/,$(SRC:%.cpp=%_my_dbg.o))
-OBJ_STD_DBG =	$(addprefix $(PATH_T)/,$(SRC:%.cpp=%_std_dbg.o))
+OBJ_MY =		$(addprefix $(PATH_O)/,$(SRC:%.cpp=%_my.o))
+OBJ_STD =		$(addprefix $(PATH_O)/,$(SRC:%.cpp=%_std.o))
+OBJ_MY_DBG =	$(addprefix $(PATH_O)/,$(SRC:%.cpp=%_my_dbg.o))
+OBJ_STD_DBG =	$(addprefix $(PATH_O)/,$(SRC:%.cpp=%_std_dbg.o))
 
 SRCS =			vector_test.cpp \
 				map_test.cpp
-OBJS_MY =		$(addprefix $(PATH_T)/,$(SRCS:%.cpp=%_my.o))
-OBJS_STD =		$(addprefix $(PATH_T)/,$(SRCS:%.cpp=%_std.o))
+OBJS_MY =		$(addprefix $(PATH_O)/,$(SRCS:%.cpp=%_my.o))
+OBJS_STD =		$(addprefix $(PATH_O)/,$(SRCS:%.cpp=%_std.o))
 
 CC =			clang++
 CFLAGS =		-Wall -Wextra -Werror
-OUTF =			output_my.txt \
-				output_std.txt
+OUTF =			$(addprefix $(PATH_R)/, output_my.txt) \
+				$(addprefix $(PATH_R)/, output_std.txt)
 DEPS =			$(PATH_T)/test.hpp \
 				$(PATH_C)/vector.hpp \
 				$(PATH_C)/map.hpp \
@@ -40,10 +44,10 @@ $(NAME_MY): $(OBJS_MY) $(OBJ_MY)
 $(NAME_STD): $(OBJS_STD) $(OBJ_STD)
 	$(CC) $(CFLAGS) $(OBJ_STD) $(OBJS_STD) -D STD_TEST -o $(NAME_STD)
 
-%_my.o: %.cpp $(DEPS)
+$(addprefix $(PATH_O)/, %_my.o): $(addprefix $(PATH_T)/, %.cpp) $(DEPS)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-%_std.o: %.cpp $(DEPS)
+$(addprefix $(PATH_O)/, %_std.o): $(addprefix $(PATH_T)/, %.cpp) $(DEPS)
 	$(CC) $(CFLAGS) -D STD_TEST -c -o $@ $<
 
 debug: $(NAME_DBG_STD) $(NAME_DBG_MY)

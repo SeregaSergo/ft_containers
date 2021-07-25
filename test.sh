@@ -1,7 +1,9 @@
 #!/bin/bash
 
+mkdir results
 make
-./test_my
-./test_std
-diff -d ./output_my.txt ./output_std.txt
-diff -y ./output_my.txt ./output_std.txt
+
+./tests/program/test_my
+./tests/program/test_std
+diff -d ./results/output_my.txt ./results/output_std.txt
+diff -y ./results/output_my.txt ./results/output_std.txt
