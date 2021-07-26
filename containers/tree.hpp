@@ -97,6 +97,10 @@ public:
 	_TreeIterator(_TreeIterator const & src): _ptr(src._ptr) {}
 	virtual ~_TreeIterator(void) {}
 
+    node_pointer base(void) {
+        return (_ptr);
+    }
+
     _TreeIterator & operator=(_TreeIterator const & src) {
 		_ptr = src._ptr;
 		return (*this);
@@ -147,19 +151,22 @@ template <class T, class Compare = ft::less<T>,
 class tree
 {
 public:
-    typedef T                               value_type;
-    typedef _Node<T>                        node_type;
-    typedef size_t                          size_type;
-	typedef value_type *                    pointer;
-	typedef value_type const *              const_pointer;
-	typedef value_type &                    reference;
-	typedef value_type const &              const_reference;
-    typedef node_type *                     node_pointer;
-    typedef const node_type *               const_node_pointer;
-    typedef Alloc                           allocator_type;
-    typedef std::ptrdiff_t                  difference_type;
+    typedef T                                       value_type;
+    typedef _Node<T>                                node_type;
+    typedef size_t                                  size_type;
+	typedef value_type *                            pointer;
+	typedef value_type const *                      const_pointer;
+	typedef value_type &                            reference;
+	typedef value_type const &                      const_reference;
+    typedef node_type *                             node_pointer;
+    typedef const node_type *                       const_node_pointer;
+    typedef Alloc                                   allocator_type;
+    typedef std::ptrdiff_t                          difference_type;
+    typedef _TreeIterator<value_type, node_type>    iterator;
+	typedef _TreeIterator<const value_type,
+                            const node_type>        const_iterator;
     typedef typename Alloc::template 
-                rebind<node_type>::other    node_allocator_type;
+                rebind<node_type>::other            node_allocator_type;
 
 private:
     node_pointer            _root;
@@ -389,6 +396,37 @@ private:
         }
     }
 
+    node_pointer    findParentHint(const_reference val, iterator hint)
+    {
+        iterator prev = hint;
+        if (_comp(*hint, val)) {
+            ++hint;
+            while (*hint && _comp(*hint, val))
+                prev = hint++;
+        }
+        else {
+            --hint;
+            while (*hint && _comp(val, *hint))
+                prev = hint--;
+        }
+        return (prev.base());
+    }
+
+    node_pointer    findParentRoot(const_reference val)
+    {
+        node_pointer parent = NULL;
+        node_pointer pos = _root;
+
+		while (pos != NULL) {
+			parent = pos;
+			if (_comp(val, pos->val))
+				pos = pos->left;
+            else
+				pos = pos->right;
+		}
+        return (parent);
+    }
+
     node_pointer minimum(node_pointer n) const
     {
         while (n->left)
@@ -515,20 +553,21 @@ public:
 		return (*this);
 	}
 
-    void insert(const_reference val)
+    ft::pair<iterator, bool>    insert(const_reference val)
+    {
+        return (insert(NULL, val));
+    }
+
+    ft::pair<iterator, bool>    insertHint(iterator const & hint, const_reference val)
     {
         node_pointer node = _alloc.allocate(1);
-        node_pointer parent = NULL;
-		node_pointer pos = _root;
+        node_pointer parent;
+		
 
-		while (pos != NULL) {
-			parent = pos;
-			if (_comp(val, pos->val)) {
-				pos = pos->left;
-			} else {
-				pos = pos->right;
-			}
-		}
+        if (parent = find(val))
+            return (ft::make_pair<iterator, bool>(iterator(parent), false));
+        
+        parent = (hint && *hint) ? findParentHint(val, hint) : findParentRoot(val);
 
         if (parent == NULL)
         {
@@ -545,9 +584,12 @@ public:
             else
 			    parent->right = node;
 		}
-        
+
         fixTreeInsert(node);
+
+        return (ft::make_pair<iterator, bool>(iterator(node), true))
     }
+
 
     void erase(const_reference value)
     {

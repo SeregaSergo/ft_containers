@@ -2,6 +2,7 @@
 #define MAP_HPP
 
 #include <memory>
+#include <type_traits>
 #include "./utils/utils.hpp"
 #include "tree.hpp"
 #include "./utils/reverse_iterator.hpp"
@@ -9,7 +10,7 @@
 namespace ft
 {
 
-template < class Key, class T, class Compare = std::less<Key> >
+template < class Key, class T, class Compare = ft::less<Key> >
 class _Node_compare
 {
     public:
@@ -31,8 +32,7 @@ class _Node_compare
         }
 };
 
-template < class Key, class T, class Compare = std::less<Key>,
-            class Alloc = std::allocator<pair<const Key,T> > >
+template < class Key, class T, class Compare = ft::less<Key>, class Alloc = std::allocator<ft::pair<const Key, T> > >
 class map
 {
 public:
@@ -68,13 +68,15 @@ public:
     typedef typename allocator_type::const_reference            const_reference;
     typedef typename allocator_type::pointer                    pointer;
     typedef typename allocator_type::const_pointer              const_pointer;
-    typedef _TreeIterator<value_type, node_type>                iterator;
-	typedef _TreeIterator<const value_type, const node_type>    const_iterator;
+    // typedef _TreeIterator<value_type, node_type>                iterator;
+	// typedef _TreeIterator<const value_type, const node_type>    const_iterator;
+    typedef typename allocator_type::size_type                  size_type;
+    typedef ft::tree<value_type, node_compare, allocator_type>  tree_type;
+    typedef typename tree_type::iterator                        iterator;
+	typedef typename tree_type::const_iterator                  const_iterator;
 	typedef ft::reverse_iterator<iterator>                      reverse_iterator;
 	typedef ft::reverse_iterator<const_iterator>                const_reverse_iterator;
     typedef typename iterator_traits<iterator>::difference_type difference_type;
-    typedef typename allocator_type::size_type                  size_type;
-    typedef tree<value_type, node_compare, allocator_type>      tree_type;
 
 private:
     tree_type       _tree;
@@ -109,6 +111,33 @@ public:
         return (_size);
     }
 
+    pair<iterator,bool> insert(const value_type & val)
+    {
+        ft::pair<iterator,bool> res = _tree.insert(val);
+        if (res.second)
+            ++_size;
+        return (res);
+    }
+
+    iterator insert(iterator position, const value_type & val)
+    {
+        ft::pair<iterator,bool> res = _tree.insert(position, val);
+        if (res.second)
+            ++_size;
+        return (res);
+    }
+	
+    template <class InputIterator>
+    void insert(InputIterator first, InputIterator last)
+    {
+        while (first != last)
+        {
+            if (_tree.insert(*first).second)
+                ++_size;
+            ++first;
+        }
+    }
+    
     //
     // Iterator member-functions
     //

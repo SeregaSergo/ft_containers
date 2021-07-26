@@ -18,7 +18,6 @@ using namespace std;
 
 #include "../containers/vector.hpp"
 #include "../containers/map.hpp"
-// #include "../containers/stack.hpp"
 using namespace ft;
 
 #endif
