@@ -72,6 +72,7 @@ public:
 	// typedef _TreeIterator<const value_type, const node_type>    const_iterator;
     typedef typename allocator_type::size_type                  size_type;
     typedef ft::tree<value_type, node_compare, allocator_type>  tree_type;
+    typedef typename tree_type::node_pointer                    node_pointer;
     typedef typename tree_type::iterator                        iterator;
 	typedef typename tree_type::const_iterator                  const_iterator;
 	typedef ft::reverse_iterator<iterator>                      reverse_iterator;
@@ -106,10 +107,86 @@ public:
                             _comp(src._comp), _alloc(src._alloc) {}
 
     virtual ~map(){}
+    
+    map & operator=(const map & src)
+    {
+        if (this == &src)
+            return (*this);
+        clear();
+        insert(src.begin(), src.end());
+        return (*this);
+    }
+
+    //
+    // Iterator member-functions
+    //
+    iterator begin(void) {
+        return (_tree.begin());
+    }
+
+    const_iterator begin(void) const {
+        return (_tree.begin());
+    }
+
+    iterator end(void) {
+        return (_tree.end());
+    }
+
+    const_iterator end(void) const {
+        return (_tree.end());
+    }
+
+    reverse_iterator rbegin(void) {
+        return (_tree.end());
+    }
+
+    const_reverse_iterator rbegin(void) const {
+        return (_tree.end());
+    }
+
+    reverse_iterator rend(void) {
+        return (_tree.begin());
+    }
+
+    const_reverse_iterator rend(void) const {
+        return (_tree.begin());
+    }
+    
+    
+    // 
+    // Capacity member-functions
+    //
+
+    bool empty(void) const {
+        return (_size == 0);
+    }
 
     size_type size(void) const {
         return (_size);
     }
+
+    size_type max_size(void) const {
+        return (_tree.max_size());
+    }
+
+    // 
+    // Element access operation
+    //
+
+    mapped_type & operator[](const key_type & k)
+    {
+        node_pointer node = _tree.find(k);
+
+		if (node)
+			return (node->value.second);
+
+		++_size;
+		return ((*((insert(make_pair(k, mapped_type()))).first)).second);
+    }
+
+    // 
+    // Modifying member-functions
+    //
 
     pair<iterator,bool> insert(const value_type & val)
     {
@@ -137,26 +214,18 @@ public:
             ++first;
         }
     }
+
+    //
+    // Observers
+    //
     
     //
-    // Iterator member-functions
+    // Operations
     //
-    iterator begin(void) {
-        return (_tree.begin());
-    }
 
-    const_iterator begin(void) const {
-        return (_tree.begin());
-    }
-
-    iterator end(void) {
-        return (_tree.end());
-    }
-
-    const_iterator end(void) const {
-        return (_tree.end());
-    }
-
+    //
+    // Allocator member-function
+    //
     allocator_type get_allocator(void) const {
         return (_alloc);
     }

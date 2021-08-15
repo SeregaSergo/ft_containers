@@ -170,6 +170,8 @@ public:
 
 private:
     node_pointer            _root;
+    node_pointer            _begin;
+    node_pointer            _end;
     Compare                 _comp;
     node_allocator_type     _alloc;
 
@@ -417,7 +419,7 @@ private:
         node_pointer parent = NULL;
         node_pointer pos = _root;
 
-		while (pos != NULL) {
+		while (pos != NULL && pos != _end) {
 			parent = pos;
 			if (_comp(val, pos->val))
 				pos = pos->left;
@@ -441,24 +443,9 @@ private:
         return (n);
     }
 
-    int depth(void)
-    {
-        node_pointer ptr = _root;
-        int n = 0;
-        while (ptr)
-        {
-            if (ptr->left)
-                ptr = ptr->left;
-            else
-                ptr = ptr->right;
-            ++n;
-        }
-        return (n);
-    }
-
     node_pointer findNode(const_reference value, node_pointer ptr)
     {
-        if (ptr == NULL)
+        if (ptr == NULL || ptr == _end)
             return (NULL);
         else if (_comp(value, ptr->val))
             return (findNode(value, ptr->left));
@@ -522,32 +509,55 @@ private:
         return (tmp);
     }
 
-public:
-    tree(void) : _root(NULL), _comp() {}
+    void    init_tree(void)
+    {
+        _root = _alloc.allocate(1);
+        _alloc.construct(_root, node_type());
+        _root->red = false;
+		_begin = _root;
+		_end = _begin;
+	}
 
-    tree(Compare const & comp): _root(NULL), _comp(comp) {}
+    void    restore_edges(void)
+    {
+		_begin = minimum(_root);
+		node_pointer tmp = maximum(_root);
+		tmp->right = _end;
+		_end->parent = tmp;
+    }
+
+    void    untie_end_edge(void)
+    {
+        if (_end->parent)
+			_end->parent->right = NULL;
+    }
+
+public:
+
+    tree(void) : _comp() {
+        init_tree();
+    }
+
+    tree(Compare const & comp) : _comp(comp) {
+        init_tree();
+    }
 
 	tree(tree const & src) : _comp(src._comp)
     {
-        _root = copyRecursive(src._root, NULL);
+        this->_root = copyRecursive(src._root, NULL);
+        this->_begin = minimum(this->_root);
+		this->_end = maximum(this->_root);
     }
 
-	virtual ~tree(void)
-    {
-        if (_root)
-        {
-            clear();
-            _root = NULL;
-        }
+	virtual ~tree(void) {
+        clear_subtree(_root);
     }
 
     tree & operator=(tree const & src)
     {
-		if (_root)
-        {
-            clear();
-            _root = NULL;
-        }
+        if (this == &src)
+            return (*this);
+        clear_subtree(_root);
         _comp = src._comp;
         _root = copyRecursive(src._root, NULL);
 		return (*this);
@@ -555,25 +565,36 @@ public:
 
     ft::pair<iterator, bool>    insert(const_reference val)
     {
-        return (insert(NULL, val));
+        node_pointer parent = find(val);
+
+        if (parent)
+            return (ft::make_pair<iterator, bool>(iterator(parent), false));
+
+        return (insert_base(findParentRoot(val), val));
     }
 
-    ft::pair<iterator, bool>    insertHint(iterator const & hint, const_reference val)
-    {
-        node_pointer node = _alloc.allocate(1);
+    ft::pair<iterator, bool>    insert_hint(iterator const & hint, const_reference val)
+    {	
         node_pointer parent;
-		
 
         if (parent = find(val))
             return (ft::make_pair<iterator, bool>(iterator(parent), false));
-        
-        parent = (hint && *hint) ? findParentHint(val, hint) : findParentRoot(val);
+
+        parent = (hint && hint.base() != _end) ? findParentHint(val, hint) : findParentRoot(val);
+
+        return (insert_base(parent, val));
+    }
+
+    ft::pair<iterator, bool>    insert_base(node_pointer parent, const_reference val)
+    {
+        node_pointer node = _alloc.allocate(1);
+
+        untie_end_edge();
 
         if (parent == NULL)
         {
             _alloc.construct(node, node_type(val, false));
 			_root = node;
-            return ;
 		}
         else
         {
@@ -583,20 +604,20 @@ public:
 			    parent->left = node;
             else
 			    parent->right = node;
+            fixTreeInsert(node);
 		}
 
-        fixTreeInsert(node);
+        restore_edges();
 
-        return (ft::make_pair<iterator, bool>(iterator(node), true))
+        return (ft::make_pair<iterator, bool>(iterator(node), true));
     }
-
 
     void erase(const_reference value)
     {
         node_pointer to_del = find(value);
+
         if (to_del == NULL)
             return;
-
         else if (to_del->left != NULL && to_del->right != NULL)
         {
             node_pointer tmp = maximum(to_del->left);
@@ -606,6 +627,8 @@ public:
 
         // In all cases node to delete has at maximum one child. 
         
+        untie_end_edge();
+
         node_pointer child = to_del->right ? to_del->right : to_del->left;
     
         if (!to_del->red)
@@ -618,6 +641,7 @@ public:
         replace_node_with_child(to_del, child);
         _alloc.destroy(to_del);
         _alloc.deallocate(to_del, 1);
+        restore_edges();
     }
 
 
@@ -653,42 +677,36 @@ public:
 		return (p);
 	}
 
-    node_pointer min(void) const {
-        if (_root == NULL)
-            return (NULL);
-        return (minimum(_root));
-    }
-
-    node_pointer max(void) {
-        if (_root == NULL)
-            return (NULL);
-        return (maximum(_root));
-    }
-
     node_pointer begin(void) {
-        return (min());
+        return (_begin);
     }
 
     const_node_pointer begin(void) const {
-        return (min());
+        return (_begin);
     }
 
     node_pointer end(void) {
-        return (NULL);
+        return (_end);
     }
 
     const_node_pointer end(void) const {
-        return (NULL);
+        return (_end);
     }
 
-    void    clear(void) {
+    void clear(void)
+    {
         clear_subtree(_root);
+        init_tree();
+    }
+
+    size_type max_size(void) const {
+        return (_alloc().max_size());
     }
 
     template <class S>
     void print(S & out)
     {
-        if (_root)
+        if (_begin != _end)
             printHelper<S>(this->_root, "", true, out);
     }
 };
