@@ -16,8 +16,6 @@ struct _Node
     _Node*      right;
     bool        red;
 
-    _Node(void) : val(), parent(NULL), left(NULL), right(NULL), red(true) {}
-
     _Node (_Node* left = NULL, _Node* right = NULL, _Node* parent = NULL)
             : val(), parent(parent), left(left), right(right), red(true) {}
     
@@ -40,6 +38,7 @@ struct _Node
         red = src.red;
         return (*this);
     }
+
 };
 
 template < class T, class N >
@@ -62,15 +61,19 @@ private:
     void next(void)
     {
 		if (_ptr->right != NULL)
+        {
+            _ptr = _ptr->right;
 			while (_ptr->left)
                 _ptr = _ptr->left;
+        }
         else
         {
-            node_pointer p = _ptr->parent;
-            while (p != NULL && _ptr != p->left)
+            node_pointer prev = _ptr;
+            _ptr = _ptr->parent;
+            while (_ptr != NULL && _ptr->left != prev)
             {
-                _ptr = p;
-                p = p->parent;
+                prev = _ptr;
+                _ptr = _ptr->parent;
             }
         }
 	}
@@ -78,15 +81,19 @@ private:
     void prev(void)
     {
 		if (_ptr->left != NULL)
+        {
+            _ptr = _ptr->left;
 			while (_ptr->right)
                 _ptr = _ptr->right;
+        }
         else
         {
-            node_pointer p = _ptr->parent;
-            while (p != NULL && _ptr != p->right)
+            node_pointer prev = _ptr;
+            _ptr = _ptr->parent;
+            while (_ptr != NULL && _ptr->right != prev)
             {
-                _ptr = p;
-                p = p->parent;
+                prev = _ptr;
+                _ptr = _ptr->parent;
             }
 		}
 	}
@@ -145,7 +152,6 @@ public:
 	}
 };
 
-
 template <class T, class Compare = ft::less<T>,
         class Alloc = std::allocator<T> >
 class tree
@@ -180,6 +186,7 @@ private:
         return (n->left == NULL && n->right == NULL);
     }
 
+    // Приязывает child к родителю n
     void replace_node_with_child(node_pointer n, node_pointer child)
     {
         if (child != NULL)
@@ -398,25 +405,49 @@ private:
         }
     }
 
+    // node_pointer    findParentHint(const_reference val, iterator hint)
+    // {
+    //     iterator prev = hint;
+    //     iterator end(_end);
+    //     iterator begin(_begin);
+
+    //     if (hint != end && _comp(*hint, val))
+    //     {
+    //         while (hint != end && _comp(*hint, val))
+    //             prev = hint++;
+    //         if (hint == end)
+    //             return (prev.base());
+    //         return (hint.base());
+    //     }
+    //     else
+    //     {
+    //         while (hint != begin && _comp(val, *hint))
+    //             prev = hint--;
+    //         if (hint == begin)
+    //             return (hint.base());
+    //         return (prev.base());
+    //     }
+    // }
+
     node_pointer    findParentHint(const_reference val, iterator hint)
     {
-        iterator prev = hint;
-        if (_comp(*hint, val)) {
+        iterator end(_end);
+
+        if (hint != end && _comp(*hint, val))
+        {
+            iterator prev = hint;
             ++hint;
-            while (*hint && _comp(*hint, val))
-                prev = hint++;
+            if (hint == end)
+                return (prev.base());
+            if (_comp(val, *hint))
+                return (hint.base());
         }
-        else {
-            --hint;
-            while (*hint && _comp(val, *hint))
-                prev = hint--;
-        }
-        return (prev.base());
+        return (findParentRoot(val));
     }
 
     node_pointer    findParentRoot(const_reference val)
     {
-        node_pointer parent = NULL;
+        node_pointer parent = _end;
         node_pointer pos = _root;
 
 		while (pos != NULL && pos != _end) {
@@ -456,9 +487,10 @@ private:
     }
 
     template <class S>
-    void printHelper(node_pointer root, std::string indent, bool last, S & out)
+    void printHelper(node_pointer root, std::string indent, bool last, S & out) const
     {
-	   	if (root != NULL) {
+	   	if (root != NULL && root != _end)
+        {
 		   out << indent;
 		   if (last) {
 		      out << "R----";
@@ -469,7 +501,7 @@ private:
 		   }
             
            std::string sColor = root->red? "(R)" : "(B)";
-		   out << root->val << sColor <<std::endl;
+		   out << to_string(root->val) << sColor << std::endl;
 		   printHelper<S>(root->left, indent, false, out);
 		   printHelper<S>(root->right, indent, true, out);
 		}
@@ -520,16 +552,85 @@ private:
 
     void    restore_edges(void)
     {
-		_begin = minimum(_root);
-		node_pointer tmp = maximum(_root);
-		tmp->right = _end;
-		_end->parent = tmp;
+        if (_root == NULL)
+        {
+            _root = _end;
+            _end->parent = NULL;
+            _begin = _end;
+        }
+        else
+        {
+            _end->parent = maximum(_root);
+		    _end->parent->right = _end;
+            _begin = minimum(_root);
+        }
     }
 
     void    untie_end_edge(void)
     {
         if (_end->parent)
 			_end->parent->right = NULL;
+    }
+
+    void swap_nodes(node_pointer x,node_pointer y)
+    {   
+        node_pointer x_parent = y->parent;
+        node_pointer x_left = y->left;
+        node_pointer x_right = y->right;
+        node_pointer * x_parent_pointer = &_root;
+        if (y->parent)
+            x_parent_pointer = y->parent->left == y ? &y->parent->left : &y->parent->right;
+
+        node_pointer y_parent = x->parent;
+        node_pointer y_left = x->left;
+        node_pointer y_right = x->right;
+        node_pointer * y_parent_pointer = &_root;
+        if (x->parent)
+            y_parent_pointer = x->parent->left == x ? &x->parent->left : &x->parent->right;
+
+        // if x and y are adjacent nodes
+        if (y->parent == x)
+        {
+            x_parent = y;
+            x_parent_pointer = NULL;
+            if (x->left == y)
+                y_left = x;
+            else
+                y_right = x;
+        }
+        else if (x->parent == y)
+        {
+            y_parent = x;
+            y_parent_pointer = NULL;
+            if (y->left == x)
+                x_left = y;
+            else
+                x_right = y;
+        }
+
+        x->parent = x_parent;
+        x->left = x_left;
+        if (x->left)
+            x->left->parent = x;
+        x->right = x_right;
+        if (x->right)
+            x->right->parent = x;
+        if (x_parent_pointer)
+            *x_parent_pointer = x;
+
+        y->parent = y_parent;
+        y->left = y_left;
+        if (y->left)
+            y->left->parent = y;
+        y->right = y_right;
+        if (y->right)
+            y->right->parent = y;
+        if (y_parent_pointer)
+            *y_parent_pointer = y;
+        
+        bool tmp = x->red;
+        x->red = y->red;
+        y->red = tmp;
     }
 
 public:
@@ -575,14 +676,12 @@ public:
 
     ft::pair<iterator, bool>    insert_hint(iterator const & hint, const_reference val)
     {	
-        node_pointer parent;
+        node_pointer parent = find(val);
 
-        if (parent = find(val))
+        if (parent)
             return (ft::make_pair<iterator, bool>(iterator(parent), false));
 
-        parent = (hint && hint.base() != _end) ? findParentHint(val, hint) : findParentRoot(val);
-
-        return (insert_base(parent, val));
+        return (insert_base(findParentHint(val, hint), val));
     }
 
     ft::pair<iterator, bool>    insert_base(node_pointer parent, const_reference val)
@@ -591,7 +690,7 @@ public:
 
         untie_end_edge();
 
-        if (parent == NULL)
+        if (parent == _end)
         {
             _alloc.construct(node, node_type(val, false));
 			_root = node;
@@ -612,23 +711,25 @@ public:
         return (ft::make_pair<iterator, bool>(iterator(node), true));
     }
 
-    void erase(const_reference value)
+    size_type erase(const_reference value)
     {
         node_pointer to_del = find(value);
 
         if (to_del == NULL)
-            return;
-        else if (to_del->left != NULL && to_del->right != NULL)
-        {
-            node_pointer tmp = maximum(to_del->left);
-            to_del->val = tmp->val;
-            to_del = tmp;
-        }
+            return (0);
+        else
+            return (erase_node(to_del));
+    }
+
+    size_type erase_node(node_pointer to_del)
+    {
+        untie_end_edge();
+
+        if (to_del->left != NULL && to_del->right != NULL)
+            swap_nodes(to_del, maximum(to_del->left));
 
         // In all cases node to delete has at maximum one child. 
         
-        untie_end_edge();
-
         node_pointer child = to_del->right ? to_del->right : to_del->left;
     
         if (!to_del->red)
@@ -642,13 +743,14 @@ public:
         _alloc.destroy(to_del);
         _alloc.deallocate(to_del, 1);
         restore_edges();
+        return (1);
     }
 
 
     node_pointer find(const_reference value) {
         return(findNode(value, _root));
     }
-
+    
     node_pointer successor(node_pointer n)
     {
 		if (n->right != NULL)
@@ -700,11 +802,27 @@ public:
     }
 
     size_type max_size(void) const {
-        return (_alloc().max_size());
+        return (_alloc.max_size());
+    }
+
+    void swap(tree<T, Compare, Alloc> & x)
+    {
+        if (&x == this)
+            return ;
+        
+        node_pointer r = this->_root;
+        node_pointer b = this->_begin;
+        node_pointer e = this->_end;
+        this->_root = x._root;
+        this->_begin = x._begin;
+        this->_end = x._end;
+        x._root = r;
+        x._begin = b;
+        x._end = e;
     }
 
     template <class S>
-    void print(S & out)
+    void print(S & out) const
     {
         if (_begin != _end)
             printHelper<S>(this->_root, "", true, out);

@@ -24,7 +24,7 @@ OBJS_MY =		$(addprefix $(PATH_O)/,$(SRCS:%.cpp=%_my.o))
 OBJS_STD =		$(addprefix $(PATH_O)/,$(SRCS:%.cpp=%_std.o))
 
 CC =			clang++
-CFLAGS =		-Wall -Wextra -Werror
+CFLAGS =		-Wall -Wextra -Werror -fsanitize=address
 OUTF =			$(addprefix $(PATH_R)/, output_my.txt) \
 				$(addprefix $(PATH_R)/, output_std.txt)
 DEPS =			$(PATH_T)/test.hpp \
@@ -50,7 +50,7 @@ $(addprefix $(PATH_O)/, %_my.o): $(addprefix $(PATH_T)/, %.cpp) $(DEPS)
 $(addprefix $(PATH_O)/, %_std.o): $(addprefix $(PATH_T)/, %.cpp) $(DEPS)
 	$(CC) $(CFLAGS) -D STD_TEST -c -o $@ $<
 
-debug: $(NAME_STD_DBG) $(NAME_MY_DBG)
+debug: $(NAME_MY_DBG) #$(NAME_STD_DBG) 
 
 $(NAME_MY_DBG): $(OBJ_MY_DBG) $(OBJS_MY)
 	$(CC) $(CFLAGS) $(OBJ_MY_DBG) $(OBJS_MY) -o $(NAME_MY_DBG)

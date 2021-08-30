@@ -4,7 +4,8 @@
 #include <type_traits>
 #include <sstream>
 
-namespace ft {
+namespace ft
+{
 
 template <class _Iter, bool> struct __iterator_traits {};
 
@@ -99,14 +100,6 @@ typename ft::iterator_traits<InputIterator>::difference_type
     return (dist);
 };
 
-template <typename T>
-std::string to_string(T smth)
-{
-    std::ostringstream ss;
-    ss << smth;
-    return (ss.str());
-};
-
 template <class InputIterator1, class InputIterator2>
 bool lexicographical_compare (InputIterator1 first1, InputIterator1 last1,
                                 InputIterator2 first2, InputIterator2 last2)
@@ -147,9 +140,17 @@ struct less
     typedef Tp      second_argument_type;
     typedef bool    result_type;
 
-    bool operator()(const Tp & _x, const Tp & _y) const {
+    result_type operator()(const Tp & _x, const Tp & _y) const {
         return (_x < _y);
     }
+};
+
+template <class Arg1, class Arg2, class Result>
+struct binary_function
+{
+    typedef Arg1 first_argument_type;
+    typedef Arg2 second_argument_type;
+    typedef Result result_type;
 };
 
 template <class T1, class T2>
@@ -158,10 +159,11 @@ struct pair
     typedef T1 first_type;
     typedef T2 second_type;
 
-    T1 first;
-    T2 second;
+    first_type first;
+    second_type second;
 
     pair(void) : first(), second() {}
+
     pair(const first_type & a, const second_type & b) : first(a), second(b) {}
     
     template<class U, class V>
@@ -174,6 +176,14 @@ struct pair
         return (*this);
     }
 };
+
+// template <class T1, class T2>
+// std::ostream & operator<<(std::ostream & o, pair<T1, T2> const & src) {
+//     o << "[" << src.first << ", " << src.second << "]";
+//     return (o);
+// }
+// template <class T1, class T2>
+// std::ostream & operator<<(std::ostream & o, ft::pair<T1, T2> const & src);
 
 template <class T1, class T2>
 bool operator==(const pair<T1,T2>& l, const pair<T1,T2>& r) {
@@ -207,8 +217,8 @@ bool operator>=(const pair<T1,T2>& l, const pair<T1,T2>& r) {
 
 
 template <class T1, class T2>
-pair<T1,T2> make_pair (T1 x, T2 y) {
-    return (pair<T1, T2>(x, y));
+pair<T1,T2> make_pair(T1 x, T2 y) {
+    return (ft::pair<T1, T2>(x, y));
 }
 
 }

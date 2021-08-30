@@ -9,6 +9,7 @@
 
 #ifdef STD_TEST
 
+#include <utility>
 #include <vector>
 #include <map>
 #include <stack>
@@ -18,6 +19,7 @@ using namespace std;
 
 #include "../containers/vector.hpp"
 #include "../containers/map.hpp"
+#include "../containers/utils/utils.hpp"
 using namespace ft;
 
 #endif
@@ -36,6 +38,20 @@ struct Buffer
 };
 
 std::ostream & operator<<(std::ostream & o, Buffer const & src);
+
+template <class T1, class T2>
+std::ostream & operator<<(std::ostream & o, pair<T1, T2> const & src) {
+    o << "[" << src.first << ", " << src.second << "]";
+    return (o);
+}
+
+template <typename T>
+std::string to_string(T smth)
+{
+    std::ostringstream ss;
+    ss << smth;
+    return (ss.str());
+}
 
 void    test_vector(std::ostream & out);
 void    test_map(std::ostream & out);
