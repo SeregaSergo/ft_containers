@@ -104,7 +104,7 @@ public:
 	_TreeIterator(_TreeIterator const & src): _ptr(src._ptr) {}
 	virtual ~_TreeIterator(void) {}
 
-    node_pointer base(void) {
+    node_pointer base(void) const {
         return (_ptr);
     }
 
@@ -152,6 +152,119 @@ public:
 	}
 };
 
+template < class T, class N >
+class _TreeConstIterator
+{
+public:
+	typedef T                               value_type;
+    typedef value_type *                    pointer;
+    typedef value_type const *              const_pointer;
+    typedef value_type &                    reference;
+    typedef value_type const &              const_reference;
+	typedef std::ptrdiff_t                  difference_type;
+    typedef N                               node_type;
+	typedef node_type *                     node_pointer;
+    typedef node_type const *               const_node_pointer;
+    typedef std::bidirectional_iterator_tag iterator_category;
+
+private:
+	const_node_pointer _ptr;
+
+    void next(void)
+    {
+		if (_ptr->right != NULL)
+        {
+            _ptr = _ptr->right;
+			while (_ptr->left)
+                _ptr = _ptr->left;
+        }
+        else
+        {
+            const_node_pointer prev = _ptr;
+            _ptr = _ptr->parent;
+            while (_ptr != NULL && _ptr->left != prev)
+            {
+                prev = _ptr;
+                _ptr = _ptr->parent;
+            }
+        }
+	}
+
+    void prev(void)
+    {
+		if (_ptr->left != NULL)
+        {
+            _ptr = _ptr->left;
+			while (_ptr->right)
+                _ptr = _ptr->right;
+        }
+        else
+        {
+            const_node_pointer prev = _ptr;
+            _ptr = _ptr->parent;
+            while (_ptr != NULL && _ptr->right != prev)
+            {
+                prev = _ptr;
+                _ptr = _ptr->parent;
+            }
+		}
+	}
+
+public:
+	_TreeConstIterator(void): _ptr(NULL) {}
+	_TreeConstIterator(const_node_pointer ptr): _ptr(ptr) {}
+	_TreeConstIterator(_TreeConstIterator const & src): _ptr(src._ptr) {}
+    _TreeConstIterator(_TreeIterator<T, N> const & src): _ptr(src.base()) {}
+	virtual ~_TreeConstIterator(void) {}
+
+    const_node_pointer base(void) {
+        return (_ptr);
+    }
+
+    _TreeConstIterator & operator=(_TreeConstIterator const & src) {
+		_ptr = src._ptr;
+		return (*this);
+	}
+
+	const_reference operator*() const {
+		return (_ptr->val);
+	}
+
+	const_pointer operator->() const {
+		return (&_ptr->val);
+	}
+
+    _TreeConstIterator & operator++() {
+		next();
+		return (*this);
+	}
+
+	_TreeConstIterator operator++(int) {
+		_TreeConstIterator tmp(*this);
+		next();
+		return (tmp);
+	}
+	
+    _TreeConstIterator & operator--() {
+		prev();
+		return (*this);
+	}
+
+	_TreeConstIterator operator--(int) {
+		_TreeConstIterator tmp(*this);
+		prev();
+		return (tmp);
+	}
+
+	bool operator==(_TreeConstIterator const & r) const {
+		return (_ptr == r._ptr);
+	}
+
+	bool operator!=(_TreeConstIterator const & r) const {
+		return (_ptr != r._ptr);
+	}
+};
+
 template <class T, class Compare = ft::less<T>,
         class Alloc = std::allocator<T> >
 class tree
@@ -165,12 +278,14 @@ public:
 	typedef value_type &                            reference;
 	typedef value_type const &                      const_reference;
     typedef node_type *                             node_pointer;
-    typedef const node_type *                       const_node_pointer;
+    typedef node_type const *                       const_node_pointer;
     typedef Alloc                                   allocator_type;
     typedef std::ptrdiff_t                          difference_type;
     typedef _TreeIterator<value_type, node_type>    iterator;
-	typedef _TreeIterator<const value_type,
-                            const node_type>        const_iterator;
+	// typedef _TreeIterator<const value_type,
+    //                         const node_type>        const_iterator;
+    typedef _TreeConstIterator<value_type,
+                                node_type>          const_iterator;
     typedef typename Alloc::template 
                 rebind<node_type>::other            node_allocator_type;
 
@@ -186,7 +301,6 @@ private:
         return (n->left == NULL && n->right == NULL);
     }
 
-    // Приязывает child к родителю n
     void replace_node_with_child(node_pointer n, node_pointer child)
     {
         if (child != NULL)
@@ -750,7 +864,7 @@ public:
     node_pointer find(const_reference value) {
         return(findNode(value, _root));
     }
-    
+
     node_pointer successor(node_pointer n)
     {
 		if (n->right != NULL)

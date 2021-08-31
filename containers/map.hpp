@@ -71,6 +71,7 @@ public:
     typedef typename allocator_type::size_type                  size_type;
     typedef ft::tree<value_type, node_compare, allocator_type>  tree_type;
     typedef typename tree_type::node_pointer                    node_pointer;
+    typedef typename tree_type::const_node_pointer              const_node_pointer;
     typedef typename tree_type::iterator                        iterator;
 	typedef typename tree_type::const_iterator                  const_iterator;
 	typedef ft::reverse_iterator<iterator>                      reverse_iterator;
@@ -268,7 +269,7 @@ public:
 
     iterator find(const key_type & k)
     {
-        node_pointer node = _tree.find(make_pair(k, mapped_type()));
+        node_pointer node = _tree.find(ft::make_pair(k, mapped_type()));
 		if (node)
 			return (iterator(node));
 		else
@@ -277,7 +278,7 @@ public:
     
     const_iterator find(const key_type & k) const
     {
-        node_pointer node = _tree.find(make_pair(k, mapped_type()));
+        node_pointer node = _tree.find(ft::make_pair(k, mapped_type()));
 		if (node)
 			return (const_iterator(node));
 		else
@@ -287,11 +288,11 @@ public:
     size_type count(const key_type & k) const
     {
         const_iterator iter = begin();
-		const_iterator end = end();
+		const_iterator end_iter = end();
 
-        while (iter != end)
+        while (iter != end_iter)
         {
-            if (!_comp(*iter, k) && !_comp(k, *iter))
+            if (!_comp((*iter).first, k) && !_comp(k, (*iter).first))
                 return (1);
             ++iter;
         }
@@ -301,57 +302,57 @@ public:
     iterator lower_bound(const key_type & k)
     {
         iterator iter = begin();
-		iterator end = end();
+		iterator end_iter = end();
 
-		while (iter != end)
+		while (iter != end_iter)
         {
-			if (!_comp(*iter, k))
+			if (!_comp((*iter).first, k))
 				return (iter);
 			++iter;
 		}
-		return (end);
+		return (end_iter);
     }
 
     const_iterator lower_bound(const key_type & k) const
     {
         const_iterator iter = begin();
-		const_iterator end = end();
+		const_iterator end_iter = end();
 
-		while (iter != end)
+		while (iter != end_iter)
         {
-			if (!_comp(*iter, k))
+			if (!_comp((*iter).first, k))
 				return (iter);
 			++iter;
 		}
-		return (end);
+		return (end_iter);
     }
 
     iterator upper_bound(const key_type & k)
     {
         iterator iter = begin();
-		iterator end = end();
+		iterator end_iter = end();
 
-		while (iter != end)
+		while (iter != end_iter)
         {
-			if (_comp(k, *iter))
+			if (_comp(k, (*iter).first))
 				return (iter);
 			++iter;
 		}
-		return (end);
+		return (end_iter);
     }
 
     const_iterator upper_bound(const key_type & k) const
     {
         const_iterator iter = begin();
-		const_iterator end = end();
+		const_iterator end_iter = end();
 
-		while (iter != end)
+		while (iter != end_iter)
         {
-			if (_comp(k, *iter))
+			if (_comp(k, (*iter).first))
 				return (iter);
 			++iter;
 		}
-		return (end);
+		return (end_iter);
     }
 
     ft::pair<const_iterator,const_iterator> equal_range(const key_type & k) const {

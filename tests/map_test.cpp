@@ -473,7 +473,120 @@ void    test_map(std::ostream & out)
 
         out << "Looking for existing element and changing it:\n";
         map<int, char const *>::const_iterator iter = m.find(-1);
+        out << *iter << "\n";
         printMap(m, out);
+
+        out << "Time : " << clock() - start_time << std::endl;
+    }
+    {
+        out << "\n ***** count check *****\n\n";
+
+        map<int, char const *> m;
+        m[3] = "saint num";
+        m[-1] = "minus one";
+        m[-99] = "problems";
+        m[666] = "number of beast";
+        m[13] = "Baker's dozen";
+
+        printMap(m, out);
+        unsigned int start_time = clock();
+
+        out << "Looking for existing element(3) = " << m.count(3) << "\n";
+
+        out << "Looking for nonexisting element(1234) = " << m.count(1234) << "\n";
+
+        out << "Time : " << clock() - start_time << std::endl;
+    }
+    {
+        out << "\n ***** lower_bound && upper_bound check *****\n\n";
+
+        map<int, char const *> m;
+        map<int, char const *>::iterator it;
+        map<int, char const *>::const_iterator const_it;
+        m[3] = "saint num";
+        m[-1] = "minus one";
+        m[-99] = "problems";
+        m[666] = "number of beast";
+        m[13] = "Baker's dozen";
+        m[7] = "seven";
+        m[18] = "+18";
+        m[-1300] = "my bank account";
+
+        const map<int, char const *> const_m(m);
+
+        printMap(m, out);
+        unsigned int start_time = clock();
+
+        out << "Lower_bound of 3 = " << *(m.lower_bound(3)) << "\n";
+        out << "Lower_bound of -1300 = " << *(m.lower_bound(-1300)) << "\n";
+        out << "Lower_bound of -1200 = " << *(m.lower_bound(-1200)) << "\n";
+        out << "Lower_bound of -1600 = " << *(m.lower_bound(-1600)) << "\n\n";
+        
+        out << "Upper_bound of 3 = " << *(m.upper_bound(3)) << "\n";
+        out << "Upper_bound of -1300 = " << *(m.upper_bound(-1300)) << "\n";
+        out << "Upper_bound of -1600 = " << *(m.upper_bound(-1600)) << "\n";
+        it = m.upper_bound(1000);
+        out << "Upper_bound of 1000 = " << (it == m.end() ? "end" : to_string(*it)) << "\n\n";
+
+        out << "Const lower_bound of 3 = " << *(const_m.lower_bound(3)) << "\n";
+        out << "Const_lower_bound of -1300 = " << *(const_m.lower_bound(-1300)) << "\n\n";
+        
+        out << "Const_upper_bound of 3 = " << *(const_m.upper_bound(3)) << "\n";
+        const_it = const_m.upper_bound(1000);
+        out << "Const_upper_bound of 1000 = " << (const_it == const_m.end() ? "end" : to_string(*it)) << "\n";
+
+        out << "Time : " << clock() - start_time << std::endl;
+    }
+    {
+        out << "\n ***** equal_range check *****\n\n";
+
+        map<int, char const *> m;
+        pair< map<int, char const *>::iterator, map<int, char const *>::iterator> ret;
+        pair< map<int, char const *>::const_iterator, map<int, char const *>::const_iterator> const_ret;
+        m[3] = "saint num";
+        m[-1] = "minus one";
+        m[666] = "number of beast";
+        m[7] = "seven";
+        m[18] = "+18";
+
+        const map<int, char const *> const_m(m);
+
+        printMap(m, out);
+        unsigned int start_time = clock();
+
+        out << "equal_range of 3:\n";
+        ret = m.equal_range(3);
+        out << "Lower_bound = " << *(ret.first) << "\n";
+        out << "Upper_bound = " << *(ret.second) << "\n\n";
+
+        out << "equal_range of 90:\n";
+        ret = m.equal_range(90);
+        out << "Lower_bound = " << *(ret.first) << "\n";
+        out << "Upper_bound = " << *(ret.second) << "\n\n";
+
+        out << "const equal_range of 3:\n";
+        const_ret = const_m.equal_range(3);
+        out << "Lower_bound = " << *(const_ret.first) << "\n";
+        out << "Upper_bound = " << *(const_ret.second) << "\n";
+
+        out << "Time : " << clock() - start_time << std::endl;
+    }
+    {
+        out << "\n ***** equal_range check *****\n\n";
+
+        map<int, char const *> m;
+        pair<const int, char const *> * ptr;
+        int size;
+
+        unsigned int start_time = clock();
+
+        ptr = m.get_allocator().allocate(5);
+        
+        size = sizeof(map<int, char const *>::value_type) * 5;
+
+        out << "The allocated array has a size of " << size << " bytes.\n";
+
+        m.get_allocator().deallocate(ptr, 5);
 
         out << "Time : " << clock() - start_time << std::endl;
     }
