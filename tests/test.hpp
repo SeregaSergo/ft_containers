@@ -13,12 +13,15 @@
 #include <vector>
 #include <map>
 #include <stack>
+#include <set>
 using namespace std;
 
 #else
 
 #include "../containers/vector.hpp"
 #include "../containers/map.hpp"
+#include "../containers/stack.hpp"
+#include "../containers/set.hpp"
 #include "../containers/utils/utils.hpp"
 using namespace ft;
 
@@ -56,6 +59,7 @@ std::string to_string(T smth)
 void    test_vector(std::ostream & out);
 void    test_map(std::ostream & out);
 void    test_stack(std::ostream & out);
+void    test_set(std::ostream & out);
 
 template < class V, class S>
 void  printVector(V const & vec, S & out)
@@ -73,12 +77,12 @@ void  printVector(V const & vec, S & out)
     out << "]\n--------------------------\n";
 }
 
-template < class V, class S>
-void  printMap(V const & map, S & out)
+template < class M, class S>
+void  printMap(M const & map, S & out)
 {
     out << "Size: " << map.size() << '\n';
 	
-	typename V::const_iterator it;
+	typename M::const_iterator it;
 	for (it = map.begin(); it != map.end(); ++it)
 	{
 		out << "[";
@@ -87,6 +91,28 @@ void  printMap(V const & map, S & out)
 		out << (*it).second;
 		out << "] ";
 	}
+	out << "\n----------------------------------\n";
+}
+
+template < class St, class S>
+void	printStack(St & s, S & out)
+{
+	out << "Size: " << s.size() << '\n';
+	while (!s.empty()) {
+		out << "[" << s.top() << "] ";
+		s.pop();
+	}
+    out << "\n----------------------------------\n";
+}
+
+template < class Set, class S>
+void  printSet(Set const & set, S & out)
+{
+    out << "Size: " << set.size() << '\n';
+	
+	typename Set::const_iterator it;
+	for (it = set.begin(); it != set.end(); ++it)
+		out << "[" << *it << "] ";
 	out << "\n----------------------------------\n";
 }
 

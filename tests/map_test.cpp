@@ -590,4 +590,66 @@ void    test_map(std::ostream & out)
 
         out << "Time : " << clock() - start_time << std::endl;
     }
+    {
+        out << "\n ***** compare == check *****\n";
+        int arr1[] = {1, 4, 6, -1, 10, 666, 111, 51};
+        pair<int, int> arrP1[8];
+        for (int i = 0; i != 8; ++i)
+            arrP1[i] = make_pair(arr1[i], arr1[i]);
+
+        int arr2[] = {1, 4, 6, -1, 10, 666, 112, 51};
+        pair<int, int> arrP2[8];
+        for (int i = 0; i != 8; ++i)
+            arrP2[i] = make_pair(arr2[i], arr2[i]);
+
+        map<int, int> m1(arrP1, &(arrP1[8]));
+        map<int, int> m2(arrP1, &(arrP1[8]));
+        map<int, int> m3(arrP2, &(arrP2[8]));
+        unsigned int start_time = clock();
+        out << "Comparing two equal map: " << ((m1 == m2) ? "true" : "false") << std::endl;
+        out << "Comparing two not equal map: " << ((m1 == m3) ? "true" : "false") << std::endl;
+        out << "Total time : " << clock() - start_time << std::endl;
+    }
+    {
+        out << "\n ***** compare != check *****\n";
+        int arr1[] = {1, 4, 6, -1, 10, 666, 111, 51};
+        pair<int, int> arrP1[8];
+        for (int i = 0; i != 8; ++i)
+            arrP1[i] = make_pair(arr1[i], arr1[i]);
+
+        int arr2[] = {1, 4, 6, -1, 10, 666, 112, 51};
+        pair<int, int> arrP2[8];
+        for (int i = 0; i != 8; ++i)
+            arrP2[i] = make_pair(arr2[i], arr2[i]);
+
+        map<int, int> m1(arrP1, &(arrP1[8]));
+        map<int, int> m2(arrP1, &(arrP1[8]));
+        map<int, int> m3(arrP2, &(arrP2[8]));
+        unsigned int start_time = clock();
+        out << "Comparing two equal map: " << ((m1 != m2) ? "true" : "false") << std::endl;
+        out << "Comparing two not equal map: " << ((m1 != m3) ? "true" : "false") << std::endl;
+        out << "Total time : " << clock() - start_time << std::endl;
+    }
+    {
+        out << "\n ***** compare < check *****\n";
+        int arr1[] = {1, 4, 6, -1, 10, 666, 111, 51};
+        pair<int, int> arrP1[8];
+        for (int i = 0; i != 8; ++i)
+            arrP1[i] = make_pair(arr1[i], arr1[i]);
+
+        int arr2[] = {1, 4, 6, -1, 10, 666, 112, 51};
+        pair<int, int> arrP2[8];
+        for (int i = 0; i != 8; ++i)
+            arrP2[i] = make_pair(arr2[i], arr2[i]);
+
+        map<int, int> m1(arrP1, &(arrP1[8]));
+        map<int, int> m2(arrP1, &(arrP1[8]));
+        map<int, int> m3(arrP2, &(arrP2[8]));
+        map<int, int> m4(arrP2, &(arrP2[7]));
+        unsigned int start_time = clock();
+        out << "Comparing two equal maps: " << ((m1 < m2) ? "true" : "false") << std::endl;
+        out << "Comparing two not equal maps (1 < 2): " << ((m1 < m3) ? "true" : "false") << std::endl;
+        out << "Comparing two not equal maps (1 > 2): " << ((m4 < m3) ? "true" : "false") << std::endl;
+        out << "Total time : " << clock() - start_time << std::endl;
+    }
 }

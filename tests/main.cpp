@@ -70,14 +70,14 @@ int main()
     // test_vector(out);
     // out << "Total time : " << clock() - start_time << std::endl;
 
-    out << "\n\n";
-    out << " *******         *******\n";
-    out << " *******   MAP   *******\n";
-    out << " *******         *******\n";
+    // out << "\n\n";
+    // out << " *******         *******\n";
+    // out << " *******   MAP   *******\n";
+    // out << " *******         *******\n";
 
-    start_time =  clock();
-    test_map(out);
-    out << "Total time : " << clock() - start_time << std::endl;
+    // start_time =  clock();
+    // test_map(out);
+    // out << "Total time : " << clock() - start_time << std::endl;
 
     // out << "\n\n";
     // out << " *******         *******\n";
@@ -87,6 +87,15 @@ int main()
     // start_time =  clock();
     // test_stack(out);
     // out << "Total time : " << clock() - start_time << std::endl;
+
+    out << "\n\n";
+    out << " *******         *******\n";
+    out << " *******   SET   *******\n";
+    out << " *******         *******\n";
+
+    start_time =  clock();
+    test_set(out);
+    out << "Total time : " << clock() - start_time << std::endl;
 
 	return 0;
 }

@@ -4,7 +4,7 @@
 #include <memory>
 #include <type_traits>
 #include "./utils/reverse_iterator.hpp"
-#include <cstring>
+// #include <cstring>
 
 namespace ft
 {
@@ -216,11 +216,9 @@ public:
     }
         
     // copy constructor
-    vector (const vector& x) : _capacity(0), _size(0)
+    vector (const vector<T,A> & x) : _arr(NULL), _capacity(0), _size(0), _alloc(x._alloc)
     {
-        reserve(x._capacity);
-		std::memcpy(this->_arr, x._arr, x._size * sizeof(value_type));
-        _size = x._size;
+        insert(begin(), x.begin(), x.end());
     }
 
     virtual ~vector(void)
@@ -563,11 +561,6 @@ public:
 };
 
 template <class T, class Alloc>
-void swap (vector<T,Alloc>& x, vector<T,Alloc>&y) {
-    x.swap(y);
-}
-
-template <class T, class Alloc>
 bool operator==(const vector<T, Alloc> & left, const vector<T, Alloc> & right)
 {
     if (left.size() != right.size())
@@ -610,6 +603,11 @@ template <class T, class Alloc>
 bool operator>=(const vector<T, Alloc> & left, const vector<T, Alloc> & right)
 {
     return (!(left < right));
+}
+
+template <class T, class Alloc>
+void swap (vector<T,Alloc>& x, vector<T,Alloc>&y) {
+    x.swap(y);
 }
 
 }

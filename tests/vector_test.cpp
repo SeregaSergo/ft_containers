@@ -10,7 +10,7 @@ void    test_vector(std::ostream & out)
         unsigned int start_time = clock();
         out << "\n ***** default constructor check *****\n\n";
         out << "vector <int>:\n";
-        vector<int> vec;
+        vector<const int> vec;
         printVector(vec, out);
         out << "\nvector <Buffer> with new():\n";
         vector<Buffer> * ptr_vec_buf = new vector<Buffer>;

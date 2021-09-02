@@ -19,17 +19,21 @@ OBJ_MY_DBG =	$(addprefix $(PATH_O)/,$(SRC:%.cpp=%_my_dbg.o))
 OBJ_STD_DBG =	$(addprefix $(PATH_O)/,$(SRC:%.cpp=%_std_dbg.o))
 
 SRCS =			vector_test.cpp \
-				map_test.cpp
+				map_test.cpp \
+				stack_test.cpp \
+				set_test.cpp
 OBJS_MY =		$(addprefix $(PATH_O)/,$(SRCS:%.cpp=%_my.o))
 OBJS_STD =		$(addprefix $(PATH_O)/,$(SRCS:%.cpp=%_std.o))
 
 CC =			clang++
-CFLAGS =		-Wall -Wextra -Werror -fsanitize=address
+CFLAGS =		-Wall -Wextra -Werror -std=c++98
 OUTF =			$(addprefix $(PATH_R)/, output_my.txt) \
 				$(addprefix $(PATH_R)/, output_std.txt)
 DEPS =			$(PATH_T)/test.hpp \
 				$(PATH_C)/vector.hpp \
 				$(PATH_C)/map.hpp \
+				$(PATH_C)/stack.hpp \
+				$(PATH_C)/set.hpp \
 				$(PATH_C)/tree.hpp \
 				$(PATH_U)/utils.hpp \
 				$(PATH_U)/reverse_iterator.hpp
@@ -50,7 +54,7 @@ $(addprefix $(PATH_O)/, %_my.o): $(addprefix $(PATH_T)/, %.cpp) $(DEPS)
 $(addprefix $(PATH_O)/, %_std.o): $(addprefix $(PATH_T)/, %.cpp) $(DEPS)
 	$(CC) $(CFLAGS) -D STD_TEST -c -o $@ $<
 
-debug: $(NAME_MY_DBG) #$(NAME_STD_DBG) 
+debug: $(NAME_STD_DBG) $(NAME_MY_DBG) 
 
 $(NAME_MY_DBG): $(OBJ_MY_DBG) $(OBJS_MY)
 	$(CC) $(CFLAGS) $(OBJ_MY_DBG) $(OBJS_MY) -o $(NAME_MY_DBG)
