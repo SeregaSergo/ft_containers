@@ -3,6 +3,7 @@
 
 #include "./utils/utils.hpp"
 #include <iostream>
+#include "../tests/test.hpp"
 
 namespace ft
 {
@@ -481,41 +482,42 @@ private:
             s->red = true;
             n->parent->red = false;
         }
-        else if (!s->red)
+        else 
         {
-            if ((n == n->parent->left) &&
-                (!s->right || !s->right->red) &&
-                (s->left && s->left->red))
+            if (!s->red)
             {
-                s->red = true;
-                s->left->red = false;
-                rotate_right(s);
+                if ((n == n->parent->left) &&
+                    (!s->right || !s->right->red) &&
+                    (s->left && s->left->red))
+                {
+                    s->red = true;
+                    s->left->red = false;
+                    rotate_right(s);
+                }
+                else if ((n == n->parent->right) &&
+                        (!s->left || !s->left->red) &&
+                        (s->right && s->right->red))
+                {
+                    s->red = true;
+                    s->right->red = false;
+                    rotate_left(s);
+                }
             }
-            else if ((n == n->parent->right) &&
-                    (!s->left || !s->left->red) &&
-                    (s->right && s->right->red))
+            s = sibling(n);
+            s->red = n->parent->red;
+            n->parent->red = false;
+            if (n == n->parent->left)
             {
-                s->red = true;
-                s->right->red = false;
-                rotate_left(s);
+                if (s->right)
+                    s->right->red = false;
+                rotate_left(n->parent);
             }
-        }
-        
-        s = sibling(n);
-        s->red = n->parent->red;
-        n->parent->red = false;
-
-        if (n == n->parent->left)
-        {
-            if (s->right)
-                s->right->red = false;
-            rotate_left(n->parent);
-        }
-        else
-        {
-            if (s->left)
-                s->left->red = false;
-            rotate_right(n->parent);
+            else
+            {
+                if (s->left)
+                    s->left->red = false;
+                rotate_right(n->parent);
+            }
         }
     }
 
@@ -589,6 +591,18 @@ private:
     }
 
     node_pointer findNode(const_reference value, node_pointer ptr)
+    {
+        if (ptr == NULL || ptr == _end)
+            return (NULL);
+        else if (_comp(value, ptr->val))
+            return (findNode(value, ptr->left));
+        else if (_comp(ptr->val, value))
+            return (findNode(value, ptr->right));
+        else
+            return (ptr);
+    }
+
+    node_pointer findNode(const_reference value, node_pointer ptr) const
     {
         if (ptr == NULL || ptr == _end)
             return (NULL);
@@ -843,7 +857,7 @@ public:
             swap_nodes(to_del, maximum(to_del->left));
 
         // In all cases node to delete has at maximum one child. 
-        
+
         node_pointer child = to_del->right ? to_del->right : to_del->left;
     
         if (!to_del->red)
@@ -862,6 +876,10 @@ public:
 
 
     node_pointer find(const_reference value) {
+        return(findNode(value, _root));
+    }
+
+    node_pointer find(const_reference value) const {
         return(findNode(value, _root));
     }
 

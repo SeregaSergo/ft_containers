@@ -62,31 +62,31 @@ int main()
         std::ostream & out = std::cout;
     #endif
 
-    // out << " *******        *******\n";
-    // out << " ******* VECTOR *******\n";
-    // out << " *******        *******\n";
+    out << " *******        *******\n";
+    out << " ******* VECTOR *******\n";
+    out << " *******        *******\n";
 
-    // start_time =  clock();
-    // test_vector(out);
-    // out << "Total time : " << clock() - start_time << std::endl;
+    start_time =  clock();
+    test_vector(out);
+    out << "Total time : " << clock() - start_time << std::endl;
 
-    // out << "\n\n";
-    // out << " *******         *******\n";
-    // out << " *******   MAP   *******\n";
-    // out << " *******         *******\n";
+    out << "\n\n";
+    out << " *******         *******\n";
+    out << " *******   MAP   *******\n";
+    out << " *******         *******\n";
 
-    // start_time =  clock();
-    // test_map(out);
-    // out << "Total time : " << clock() - start_time << std::endl;
+    start_time =  clock();
+    test_map(out);
+    out << "Total time : " << clock() - start_time << std::endl;
 
-    // out << "\n\n";
-    // out << " *******         *******\n";
-    // out << " *******  STACK  *******\n";
-    // out << " *******         *******\n";
+    out << "\n\n";
+    out << " *******         *******\n";
+    out << " *******  STACK  *******\n";
+    out << " *******         *******\n";
 
-    // start_time =  clock();
-    // test_stack(out);
-    // out << "Total time : " << clock() - start_time << std::endl;
+    start_time =  clock();
+    test_stack(out);
+    out << "Total time : " << clock() - start_time << std::endl;
 
     out << "\n\n";
     out << " *******         *******\n";

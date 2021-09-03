@@ -25,8 +25,11 @@ public:
     typedef typename allocator_type::const_pointer                  const_pointer;
     typedef typename allocator_type::size_type                      size_type;
     typedef ft::tree<const value_type, key_compare, allocator_type> tree_type;
+    typedef typename tree_type::node_type                           node_type;
     typedef typename tree_type::node_pointer                        node_pointer;
     typedef typename tree_type::const_node_pointer                  const_node_pointer;
+    // typedef _TreeIterator<const value_type, node_type>              iterator;
+	// typedef _TreeIterator<const value_type, node_type>              const_iterator;
     typedef typename tree_type::iterator                            iterator;
 	typedef typename tree_type::const_iterator                      const_iterator;
 	typedef ft::reverse_iterator<iterator>                          reverse_iterator;
@@ -215,7 +218,7 @@ public:
 		if (node)
 			return (iterator(node));
 		else
-            return (end());
+            return (const_cast<node_pointer>(_tree.end()));
     }
 
     size_type count(const value_type & val) const
@@ -234,8 +237,8 @@ public:
 
     iterator lower_bound(const value_type & val) const
     {
-        iterator iter = begin();
-		iterator end_iter = end();
+        iterator iter = const_cast<node_pointer>(_tree.begin());
+		iterator end_iter = const_cast<node_pointer>(_tree.end());
 
 		while (iter != end_iter)
         {
@@ -248,8 +251,8 @@ public:
 
     iterator upper_bound(const value_type & val) const
     {
-        iterator iter = begin();
-		iterator end_iter = end();
+        iterator iter = const_cast<node_pointer>(_tree.begin());
+		iterator end_iter = const_cast<node_pointer>(_tree.end());
 
 		while (iter != end_iter)
         {

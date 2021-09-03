@@ -572,7 +572,7 @@ void    test_map(std::ostream & out)
         out << "Time : " << clock() - start_time << std::endl;
     }
     {
-        out << "\n ***** equal_range check *****\n\n";
+        out << "\n ***** get_allocator check *****\n\n";
 
         map<int, char const *> m;
         pair<const int, char const *> * ptr;

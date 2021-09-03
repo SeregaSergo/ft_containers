@@ -26,7 +26,7 @@ OBJS_MY =		$(addprefix $(PATH_O)/,$(SRCS:%.cpp=%_my.o))
 OBJS_STD =		$(addprefix $(PATH_O)/,$(SRCS:%.cpp=%_std.o))
 
 CC =			clang++
-CFLAGS =		-Wall -Wextra -Werror -std=c++98
+CFLAGS =		-Wall -Wextra -Werror -fsanitize=address -std=c++98
 OUTF =			$(addprefix $(PATH_R)/, output_my.txt) \
 				$(addprefix $(PATH_R)/, output_std.txt)
 DEPS =			$(PATH_T)/test.hpp \
