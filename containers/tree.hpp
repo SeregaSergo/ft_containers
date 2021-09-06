@@ -3,7 +3,6 @@
 
 #include "./utils/utils.hpp"
 #include <iostream>
-#include "../tests/test.hpp"
 
 namespace ft
 {
@@ -283,8 +282,6 @@ public:
     typedef Alloc                                   allocator_type;
     typedef std::ptrdiff_t                          difference_type;
     typedef _TreeIterator<value_type, node_type>    iterator;
-	// typedef _TreeIterator<const value_type,
-    //                         const node_type>        const_iterator;
     typedef _TreeConstIterator<value_type,
                                 node_type>          const_iterator;
     typedef typename Alloc::template 
@@ -614,26 +611,26 @@ private:
             return (ptr);
     }
 
-    template <class S>
-    void printHelper(node_pointer root, std::string indent, bool last, S & out) const
-    {
-	   	if (root != NULL && root != _end)
-        {
-		   out << indent;
-		   if (last) {
-		      out << "R----";
-		      indent += "     ";
-		   } else {
-		      out << "L----";
-		      indent += "|    ";
-		   }
+    // template <class S>
+    // void printHelper(node_pointer root, std::string indent, bool last, S & out) const
+    // {
+	//    	if (root != NULL && root != _end)
+    //     {
+	// 	   out << indent;
+	// 	   if (last) {
+	// 	      out << "R----";
+	// 	      indent += "     ";
+	// 	   } else {
+	// 	      out << "L----";
+	// 	      indent += "|    ";
+	// 	   }
             
-           std::string sColor = root->red? "(R)" : "(B)";
-		   out << to_string(root->val) << sColor << std::endl;
-		   printHelper<S>(root->left, indent, false, out);
-		   printHelper<S>(root->right, indent, true, out);
-		}
-	}
+    //        std::string sColor = root->red? "(R)" : "(B)";
+	// 	   out << to_string(root->val) << sColor << std::endl;
+	// 	   printHelper<S>(root->left, indent, false, out);
+	// 	   printHelper<S>(root->right, indent, true, out);
+	// 	}
+	// }
 
     void    clearRecursive(node_pointer n)
     {
@@ -953,12 +950,12 @@ public:
         x._end = e;
     }
 
-    template <class S>
-    void print(S & out) const
-    {
-        if (_begin != _end)
-            printHelper<S>(this->_root, "", true, out);
-    }
+    // template <class S>
+    // void print(S & out) const
+    // {
+    //     if (_begin != _end)
+    //         printHelper<S>(this->_root, "", true, out);
+    // }
 };
 
 }

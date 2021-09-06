@@ -1,4 +1,11 @@
 #include "test.hpp"
+#ifndef STD_TEST
+
+#include "../containers/map.hpp"
+#include "../containers/utils/utils.hpp"
+#include "../containers/vector.hpp"
+
+#endif
 
 void    test_map(std::ostream & out)
 {

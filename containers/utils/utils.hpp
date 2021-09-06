@@ -177,13 +177,10 @@ struct pair
     }
 };
 
-// template <class T1, class T2>
-// std::ostream & operator<<(std::ostream & o, pair<T1, T2> const & src) {
-//     o << "[" << src.first << ", " << src.second << "]";
-//     return (o);
-// }
-// template <class T1, class T2>
-// std::ostream & operator<<(std::ostream & o, ft::pair<T1, T2> const & src);
+template <class T1, class T2>
+pair<T1,T2> make_pair(T1 x, T2 y) {
+    return (ft::pair<T1, T2>(x, y));
+}
 
 template <class T1, class T2>
 bool operator==(const pair<T1,T2>& l, const pair<T1,T2>& r) {
@@ -213,12 +210,6 @@ bool operator>(const pair<T1,T2>& l, const pair<T1,T2>& r) {
 template <class T1, class T2>
 bool operator>=(const pair<T1,T2>& l, const pair<T1,T2>& r) {
     return (!(l < r));
-}
-
-
-template <class T1, class T2>
-pair<T1,T2> make_pair(T1 x, T2 y) {
-    return (ft::pair<T1, T2>(x, y));
 }
 
 }

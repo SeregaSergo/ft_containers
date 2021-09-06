@@ -35,29 +35,27 @@ std::ostream & operator<<(std::ostream & o, Buffer const & src) {
     return (o);
 }
 
-void    printWelcome(std::ofstream & outf)
+void    prepareFile(std::ofstream & outf, std::string file_name)
 {
     #ifdef STD_TEST
 
-        outf.open("./results/output_std.txt");
-        outf << "\n ***** STD Library *****\n" << std::endl;
+        outf.open("./results/" + file_name + "_std.txt");
+        outf << "\n ******* STD Library *******\n" << std::endl;
 
     #else
 
-        outf.open("./results/output_my.txt");
-        outf << "\n ***** My own library *****\n" << std::endl;
+        outf.open("./results/" + file_name + "_my.txt");
+        outf << "\n ******* My own library *******\n" << std::endl;
 
     #endif
 }
-
-void    test_vector(std::ostream & out);
 
 int main()
 {
     unsigned int start_time;
     #ifndef DEBUG_TERM
         std::ofstream out;
-        printWelcome(out);
+        prepareFile(out, "vector");
     #else
         std::ostream & out = std::cout;
     #endif
@@ -70,6 +68,11 @@ int main()
     test_vector(out);
     out << "Total time : " << clock() - start_time << std::endl;
 
+    #ifndef DEBUG_TERM
+        out.close();
+        prepareFile(out, "map");
+    #endif
+
     out << "\n\n";
     out << " *******         *******\n";
     out << " *******   MAP   *******\n";
@@ -78,6 +81,11 @@ int main()
     start_time =  clock();
     test_map(out);
     out << "Total time : " << clock() - start_time << std::endl;
+
+    #ifndef DEBUG_TERM
+        out.close();
+        prepareFile(out, "stack");
+    #endif
 
     out << "\n\n";
     out << " *******         *******\n";
@@ -88,14 +96,19 @@ int main()
     test_stack(out);
     out << "Total time : " << clock() - start_time << std::endl;
 
+    #ifndef DEBUG_TERM
+        out.close();
+        prepareFile(out, "set");
+    #endif
+
     out << "\n\n";
     out << " *******         *******\n";
     out << " *******   SET   *******\n";
-    out << " *******         *******\n";
+    out << " *******         *******\n"; 
 
     start_time =  clock();
     test_set(out);
     out << "Total time : " << clock() - start_time << std::endl;
 
-	return 0;
+	return (0);
 }

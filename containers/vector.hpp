@@ -4,7 +4,6 @@
 #include <memory>
 #include <type_traits>
 #include "./utils/reverse_iterator.hpp"
-// #include <cstring>
 
 namespace ft
 {

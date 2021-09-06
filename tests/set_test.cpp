@@ -1,5 +1,13 @@
 #include "test.hpp"
 
+#ifndef STD_TEST
+
+#include "../containers/set.hpp"
+#include "../containers/utils/utils.hpp"
+#include "../containers/vector.hpp"
+
+#endif
+
 void    test_set(std::ostream & out)
 {
     {

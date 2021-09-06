@@ -26,17 +26,15 @@ OBJS_MY =		$(addprefix $(PATH_O)/,$(SRCS:%.cpp=%_my.o))
 OBJS_STD =		$(addprefix $(PATH_O)/,$(SRCS:%.cpp=%_std.o))
 
 CC =			clang++
-CFLAGS =		-Wall -Wextra -Werror -fsanitize=address -std=c++98
-OUTF =			$(addprefix $(PATH_R)/, output_my.txt) \
-				$(addprefix $(PATH_R)/, output_std.txt)
-DEPS =			$(PATH_T)/test.hpp \
-				$(PATH_C)/vector.hpp \
-				$(PATH_C)/map.hpp \
-				$(PATH_C)/stack.hpp \
-				$(PATH_C)/set.hpp \
-				$(PATH_C)/tree.hpp \
-				$(PATH_U)/utils.hpp \
-				$(PATH_U)/reverse_iterator.hpp
+CFLAGS =		-Wall -Wextra -Werror -std=c++98
+OUTF =			$(addprefix $(PATH_R)/, *.txt)
+
+DEPS =			$(OBJ_MY:.o=.d) \
+				$(OBJ_STD:.o=.d) \
+				$(OBJ_MY_DBG:.o=.d) \
+				$(OBJ_STD_DBG:.o=.d) \
+				$(OBJS_MY:.o=.d) \
+				$(OBJS_STD:.o=.d)
 
 .PHONY: all clean fclean re debug
 
@@ -48,13 +46,13 @@ $(NAME_MY): $(OBJS_MY) $(OBJ_MY)
 $(NAME_STD): $(OBJS_STD) $(OBJ_STD)
 	$(CC) $(CFLAGS) $(OBJ_STD) $(OBJS_STD) -D STD_TEST -o $(NAME_STD)
 
-$(addprefix $(PATH_O)/, %_my.o): $(addprefix $(PATH_T)/, %.cpp) $(DEPS)
-	$(CC) $(CFLAGS) -c -o $@ $<
+$(addprefix $(PATH_O)/, %_my.o): $(addprefix $(PATH_T)/, %.cpp)
+	$(CC) $(CFLAGS) -MMD -c -o $@ $<
 
-$(addprefix $(PATH_O)/, %_std.o): $(addprefix $(PATH_T)/, %.cpp) $(DEPS)
-	$(CC) $(CFLAGS) -D STD_TEST -c -o $@ $<
+$(addprefix $(PATH_O)/, %_std.o): $(addprefix $(PATH_T)/, %.cpp)
+	$(CC) $(CFLAGS) -MMD -D STD_TEST -c -o $@ $<
 
-debug: $(NAME_STD_DBG) $(NAME_MY_DBG) 
+debug: $(NAME_STD_DBG) $(NAME_MY_DBG)
 
 $(NAME_MY_DBG): $(OBJ_MY_DBG) $(OBJS_MY)
 	$(CC) $(CFLAGS) $(OBJ_MY_DBG) $(OBJS_MY) -o $(NAME_MY_DBG)
@@ -62,14 +60,16 @@ $(NAME_MY_DBG): $(OBJ_MY_DBG) $(OBJS_MY)
 $(NAME_STD_DBG): $(OBJ_STD_DBG) $(OBJS_STD)
 	$(CC) $(CFLAGS) $(OBJ_STD_DBG) $(OBJS_STD) -o $(NAME_STD_DBG)
 
-$(addprefix $(PATH_O)/, %_my_dbg.o): $(addprefix $(PATH_T)/, %.cpp) $(DEPS)
+$(addprefix $(PATH_O)/, %_my_dbg.o): $(addprefix $(PATH_T)/, %.cpp)
 	$(CC) $(CFLAGS) -D DEBUG_TERM -c -o $@ $<
 
-$(addprefix $(PATH_O)/, %_std_dbg.o): $(addprefix $(PATH_T)/, %.cpp) $(DEPS)
+$(addprefix $(PATH_O)/, %_std_dbg.o): $(addprefix $(PATH_T)/, %.cpp)
 	$(CC) $(CFLAGS) -D DEBUG_TERM -D STD_TEST -c -o $@ $<
 
+-include $(DEPS)
+
 clean:
-	/bin/rm -f $(OBJ_MY) $(OBJ_STD) $(OUTF) $(OBJ_MY_DBG) $(OBJ_STD_DBG) $(OBJS_STD) $(OBJS_MY)
+	/bin/rm -f $(OBJ_MY) $(OBJ_STD) $(OUTF) $(OBJ_MY_DBG) $(OBJ_STD_DBG) $(OBJS_STD) $(OBJS_MY) $(DEPS)
 
 fclean: clean
 	/bin/rm -f $(NAME_MY) $(NAME_STD) $(NAME_STD_DBG) $(NAME_MY_DBG)

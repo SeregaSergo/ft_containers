@@ -1,5 +1,12 @@
 #include "test.hpp"
 
+#ifndef STD_TEST
+
+#include "../containers/vector.hpp"
+#include "../containers/utils/utils.hpp"
+
+#endif
+
 void    myFunc(int & i) {
     i *= 2;
 }

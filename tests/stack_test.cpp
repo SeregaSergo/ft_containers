@@ -1,6 +1,13 @@
 #include "test.hpp"
 #include <list>
 
+#ifndef STD_TEST
+
+#include "../containers/stack.hpp"
+#include "../containers/vector.hpp"
+
+#endif
+
 void    test_stack(std::ostream & out)
 {
     {
